@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #app {
+  font-family: 'Nunito', sans-serif;
+  background-color: #f7fafc;
+  height: 100vh;
+}
