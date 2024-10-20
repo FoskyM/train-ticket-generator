@@ -188,6 +188,19 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.closePath();
   ctx.fill();
 
+  // 创建水印 CR
+  const watermarkCanvas = document.createElement('canvas');
+  watermarkCanvas.width = 16; // 调整宽度
+  watermarkCanvas.height = 18; // 调整高度
+  const watermarkCtx = watermarkCanvas.getContext('2d');
+  watermarkCtx.font = '8px Arial';
+  watermarkCtx.fillStyle = '#94cae0';
+  watermarkCtx.fillText('CR', 5, 12); // 调整文本位置
+
+  const pattern = ctx.createPattern(watermarkCanvas, 'repeat');
+  ctx.fillStyle = pattern;
+  ctx.fillRect(20, canvasHeight * 0.88, canvasWidth - 40, 20);
+
   // 始发站、车次、目的地
   ctx.fillStyle = '#000';
   ctx.font = '45px SimHei';
