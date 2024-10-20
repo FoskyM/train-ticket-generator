@@ -7,6 +7,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { pinyin } from 'pinyin-pro';
+import QRCode from 'qrcode';
 import CRHImage from '@/assets/img/CRH.jpg';
 
 const props = defineProps({
@@ -294,6 +295,26 @@ const drawTicketDetails = (canvas, ctx) => {
   const text2Width = getTextWidth(ctx, text2);
   drawCustomText(ctx, text1, dashLeft + dashWidth / 2 - text1Width / 2, 408);
   drawCustomText(ctx, text2, dashLeft + dashWidth / 2 - text2Width / 2, 440);
+
+  // 二维码
+  const qrCodeText = 'https://github.com/FoskyM';
+  const qrCodeWidth = 120;
+  const qrCodeOptions = {
+    width: qrCodeWidth,
+    margin: 0,
+    color: {
+      dark: '#000000b0',  // 二维码颜色
+      light: '#FFFFFF00'  // 背景透明
+    }
+  };
+  QRCode.toDataURL(qrCodeText, qrCodeOptions, (err, url) => {
+    if (err) throw err;
+    const qrImage = new Image();
+    qrImage.src = url;
+    qrImage.onload = () => {
+      ctx.drawImage(qrImage, dashLeft + dashWidth + 60, 330, qrCodeWidth, qrCodeWidth);
+    };
+  });
 
   // 车票ID和售票点
   ctx.font = ' 24px FangSong';
