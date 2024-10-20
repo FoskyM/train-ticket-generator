@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import TicketCanvas from '@/components/TicketCanvas.vue';
 
 type TicketData = {
@@ -83,8 +83,7 @@ const generateFormFields = () => {
       key,
       label: fieldInfo.value[key].label,
       type: fieldInfo.value[key].type,
-      colSpan: fieldInfo.value[key].colSpan,
-      model: ticketInfo.value[key],
+      colSpan: fieldInfo.value[key].colSpan
     });
   }
   for (const field of fields) {
@@ -127,7 +126,7 @@ const formFields = generateFormFields();
               >
               <template v-if="field.type === 'select'">
                 <select
-                  v-model="field.model"
+                  v-model="ticketInfo[field.key]"
                   :id="field.key"
                   class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
@@ -141,7 +140,7 @@ const formFields = generateFormFields();
                   :type="field.type"
                   :step="field.step || null"
                   :id="field.key"
-                  v-model="field.model"
+                  v-model="ticketInfo[field.key]"
                   class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </template>
