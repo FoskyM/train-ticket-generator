@@ -63,7 +63,14 @@ const getTextWidth = (ctx, text) => {
   return ctx.measureText(text).width;
 };
 
+const destroyCanvas = () => {
+  const canvas = ticketCanvas.value;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
 const drawTicket = () => {
+  destroyCanvas();
   const canvas = ticketCanvas.value;
   const ctx = canvas.getContext('2d');
 
@@ -305,6 +312,7 @@ onMounted(() => {
 });
 
 watch(() => props.ticketInfo, () => {
+  console.log(props.ticketInfo);
   drawTicket();
 }, { deep: true });
 </script>
