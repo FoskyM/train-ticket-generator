@@ -56,12 +56,13 @@ const drawTicket = () => {
     ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight);
     ctx.globalAlpha = 1.0;
 
-    drawTicketDetails(ctx);
+    drawTicketDetails(canvas, ctx);
   };
 };
 
-const drawTicketDetails = (ctx) => {
-  // 背景
+const drawTicketDetails = (canvas, ctx) => {
+  
+  // 圆角矩形
   ctx.fillStyle = 'rgba(173, 216, 230, .5)';
   ctx.beginPath();
   ctx.moveTo(30, 10);
@@ -72,7 +73,7 @@ const drawTicketDetails = (ctx) => {
   ctx.closePath();
   ctx.fill();
 
-  // 两边凸出的小块（梯形）
+  // 两边凸出的梯形小块
   ctx.fillStyle = 'rgba(173, 216, 230, .5)';
   const drawTrapezoid = (x, y, width, height, offset, direction) => {
     ctx.beginPath();
@@ -95,6 +96,52 @@ const drawTicketDetails = (ctx) => {
   drawTrapezoid(canvasWidth - 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'right');
   drawTrapezoid(10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left');
   drawTrapezoid(canvasWidth - 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'right');
+
+  // 设置线条样式
+  ctx.strokeStyle = 'rgba(173, 216, 230, .5)'; // 颜色略比底色深
+  ctx.lineWidth = 1;
+
+  const angle = - Math.PI / 6;
+
+  // 绘制多个60度的斜线
+  const spacing = 5; // 斜线之间的间距
+  let bottomStartX = 0;
+  for (let i = 20; i < canvas.width - 20; i += spacing) {
+    const startX = i;
+    const startY = 10;
+    let endX = startX + canvas.height * Math.tan(angle);
+    let endY = canvas.height - 10;
+
+    if (endX < 20) {
+      endX = 20 + 1;
+      endY = startY + (startX - 30) / Math.tan(-angle);
+    }
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY); // 终点计算
+    ctx.stroke();
+
+    bottomStartX = endX;
+  }
+
+  for (let i = bottomStartX + 5; i < canvas.width - 20; i += spacing) {
+    const startX = i;
+    const startY = canvas.height - 10;
+    let endX = startX + canvas.height * Math.tan(-angle);
+    let endY = 10;
+
+    if (endX > canvas.width - 20) {
+      endX = canvas.width - 20;
+      endY = canvas.height - 10 - (canvas.width - 30 - startX) / Math.tan(-angle);
+    }
+    
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY); // 终点计算
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#000';
 
   // 下方略深的蓝色区域
   ctx.fillStyle = '#87ceeb';
