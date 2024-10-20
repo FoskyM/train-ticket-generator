@@ -21,6 +21,7 @@ const protrusionWidth = 10;
 const canvasWidth = 876;
 const canvasHeight = 539;
 const leftOffset = 80;
+const topOffset = 20;
 
 const ticketCanvas = ref(null);
 
@@ -185,8 +186,8 @@ const drawTicketDetails = (canvas, ctx) => {
   const startStation = props.ticketInfo.startStation;
   const endStation = props.ticketInfo.endStation;
   const stationSpacing = 10; // 设置字间隔
-  drawCustomText(ctx, startStation, 110, 80, stationSpacing);
-  drawCustomText(ctx, endStation, canvasWidth / 2 + 120, 80, stationSpacing);
+  drawCustomText(ctx, startStation, 110, topOffset + 80, stationSpacing);
+  drawCustomText(ctx, endStation, canvasWidth / 2 + 120, topOffset + 80, stationSpacing);
 
   ctx.font = '30px FangSong';
   let startStationPinyin = pinyin(startStation, { toneType: 'none' }).replace(/ /g, '');
@@ -196,15 +197,15 @@ const drawTicketDetails = (canvas, ctx) => {
   const startStationPinyinWidth = getTextWidth(ctx, startStationPinyin);
   const endStationPinyinWidth = getTextWidth(ctx, endStationPinyin);
 
-  drawCustomText(ctx, startStationPinyin, 200 - startStationPinyinWidth / 2, 115, -1)
-  drawCustomText(ctx, endStationPinyin, canvasWidth / 2 + 220 - endStationPinyinWidth / 2, 115, -1)
+  drawCustomText(ctx, startStationPinyin, 200 - startStationPinyinWidth / 2, topOffset + 115, -1)
+  drawCustomText(ctx, endStationPinyin, canvasWidth / 2 + 220 - endStationPinyinWidth / 2, topOffset + 115, -1)
 
   ctx.font = '42px Simsun';
   const trainNumber = props.ticketInfo.trainNumber;
   const trainNumberWidth = getTextWidth(ctx, trainNumber) + 2 * trainNumber.length;
-  drawCustomText(ctx, trainNumber, canvasWidth / 2 - trainNumberWidth / 2, 75, 2);
+  drawCustomText(ctx, trainNumber, canvasWidth / 2 - trainNumberWidth / 2, topOffset + 75, 2);
   const arrowStartX = canvasWidth / 2 - 60;
-  const arrowStartY = 82;
+  const arrowStartY = topOffset + 82;
   const arrowLength = 120;
   const arrowHeight = 5;
   const arrowWidth = 20;
@@ -216,8 +217,8 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.stroke();
 
   ctx.font = '28px Simsun';
-  drawCustomText(ctx, '站', 270, 75);
-  drawCustomText(ctx, '站', canvasWidth - 160, 75);
+  drawCustomText(ctx, '站', 270, topOffset + 75);
+  drawCustomText(ctx, '站', canvasWidth - 160, topOffset + 75);
 
   // 日期、时间、座位号
   ctx.font = '40px Simhei';
@@ -225,34 +226,34 @@ const drawTicketDetails = (canvas, ctx) => {
   const year = date.getFullYear().toString();
   const month = date.getMonth() + 1 > 9 ? (date.getMonth() + 1).toString() : '0' + (date.getMonth() + 1);
   const day = date.getDate() > 9 ? date.getDate().toString() : '0' + date.getDate();
-  drawCustomText(ctx, year, leftOffset + 10, 170, -2)
-  drawCustomText(ctx, month, leftOffset + 118, 170, -2)
-  drawCustomText(ctx, day, leftOffset + 180, 170, -2)
-  drawCustomText(ctx, props.ticketInfo.time, leftOffset + 248, 170, -2)
-  drawCustomText(ctx, props.ticketInfo.seatCarriage, canvasWidth / 2 + 120, 170, -2)
-  drawCustomText(ctx, props.ticketInfo.seatNumber, canvasWidth / 2 + 175, 170, -2)
+  drawCustomText(ctx, year, leftOffset + 10, topOffset + 170, -2)
+  drawCustomText(ctx, month, leftOffset + 118, topOffset + 170, -2)
+  drawCustomText(ctx, day, leftOffset + 180, topOffset + 170, -2)
+  drawCustomText(ctx, props.ticketInfo.time, leftOffset + 248, topOffset + 170, -2)
+  drawCustomText(ctx, props.ticketInfo.seatCarriage, canvasWidth / 2 + 120, topOffset + 170, -2)
+  drawCustomText(ctx, props.ticketInfo.seatNumber, canvasWidth / 2 + 175, topOffset + 170, -2)
   
   ctx.font = '21px FangSong';
-  drawCustomText(ctx, '年', leftOffset + 90, 164);
-  drawCustomText(ctx, '月', leftOffset + 155, 164);
-  drawCustomText(ctx, '日', leftOffset + 218, 164);
-  drawCustomText(ctx, '开', leftOffset + 345, 164);
-  drawCustomText(ctx, '车', leftOffset + 515, 164);
-  drawCustomText(ctx, '号', leftOffset + 590, 164);
-  drawCustomText(ctx, '元', leftOffset + 122, 210);
+  drawCustomText(ctx, '年', leftOffset + 90, topOffset + 164);
+  drawCustomText(ctx, '月', leftOffset + 155, topOffset + 164);
+  drawCustomText(ctx, '日', leftOffset + 218, topOffset + 164);
+  drawCustomText(ctx, '开', leftOffset + 345, topOffset + 164);
+  drawCustomText(ctx, '车', leftOffset + 515, topOffset + 164);
+  drawCustomText(ctx, '号', leftOffset + 590, topOffset + 164);
+  drawCustomText(ctx, '元', leftOffset + 122, topOffset + 210);
 
   // 票价、额外信息、座位类型
   ctx.font = '40px SimSun';
-  drawCustomText(ctx, '￥', leftOffset + 15, 215);
+  drawCustomText(ctx, '￥', leftOffset + 15, topOffset + 215);
   ctx.font = '40px Simhei';
-  drawCustomText(ctx, props.ticketInfo.price, leftOffset + 50, 215, -2)
+  drawCustomText(ctx, props.ticketInfo.price, leftOffset + 50, topOffset + 215, -2)
 
   ctx.font = '28px SimSun';
-  drawCustomText(ctx, props.ticketInfo.extraInfo ?? '', 180, 210);
+  drawCustomText(ctx, props.ticketInfo.extraInfo ?? '', 180, topOffset + 210);
   const seatType = props.ticketInfo.seatType;
   const seatTypeWidth = getTextWidth(ctx, seatType);
 
-  drawCustomText(ctx, seatType, 650 - seatTypeWidth / 2, 210);
+  drawCustomText(ctx, seatType, 650 - seatTypeWidth / 2, topOffset + 210);
   ctx.font = '20px Arial';
   // 限乘当日当次车
   // ctx.fillText('限乘当日当次车', 40, 200);
@@ -295,8 +296,8 @@ const drawTicketDetails = (canvas, ctx) => {
   
   // 车票ID后七位
   ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-  ctx.font = 'bold 32px Arial';
-  ctx.fillText(props.ticketInfo.id.slice(-7), 80, 50);
+  ctx.font = ' 42px Arial';
+  ctx.fillText(props.ticketInfo.redId, 80, 65);
 };
 
 onMounted(() => {

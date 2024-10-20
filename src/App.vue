@@ -4,6 +4,7 @@ import TicketCanvas from '@/components/TicketCanvas.vue';
 
 type TicketData = {
   id: string; // 火车票 ID
+  redId: string; // 左上角红色 ID
   ticketOffice: string; // 售票点
   startStation: string; // 出发地
   endStation: string; // 目的地
@@ -37,6 +38,7 @@ const seatTypeList = ref([
 
 const fieldInfo = ref({
   id: { label: '火车票 ID', type: 'text', colSpan: 2 },
+  redId: { label: '红色 ID', type: 'text', colSpan: 2 },
   ticketOffice: { label: '售票点', type: 'text', colSpan: 1 },
   startStation: { label: '出发地', type: 'text', colSpan: 1 },
   endStation: { label: '目的地', type: 'text', colSpan: 1 },
@@ -58,6 +60,7 @@ const fieldInfo = ref({
 
 const ticketInfo = ref<TicketData>({
   id: '5166430030905Q041902',
+  redId: 'Z160Q041902',
   ticketOffice: '临高南',
   startStation: '临高南',
   endStation: '海口东',
