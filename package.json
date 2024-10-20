@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "pinia": "^2.2.4",
+    "pinyin": "^4.0.0-alpha.2",
     "vue": "^3.5.12"
   },
   "devDependencies": {
