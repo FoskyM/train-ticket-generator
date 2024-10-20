@@ -67,7 +67,7 @@ const ticketInfo = ref<TicketData>({
   trainNumber: 'D7162',
   date: '2018-09-04',
   time: '13:02',
-  price: '24.0',
+  price: 24.0,
   seatType: '二等座',
   seatCarriage: '03',
   seatNumber: '16B',

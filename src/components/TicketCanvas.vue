@@ -253,7 +253,8 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.font = '40px SimSun';
   drawCustomText(ctx, '￥', leftOffset + 15, topOffset + 215);
   ctx.font = '40px Simhei';
-  drawCustomText(ctx, props.ticketInfo.price, leftOffset + 50, topOffset + 215, -2)
+  const price = props.ticketInfo.price.toFixed(1).toString();
+  drawCustomText(ctx, price, leftOffset + 50, topOffset + 215, -2)
 
   ctx.font = '28px SimSun';
   drawCustomText(ctx, props.ticketInfo.extraInfo ?? '', 180, topOffset + 210);
