@@ -28,10 +28,33 @@ const maskedId = (idCard) => {
   return idCard.slice(0, 10) + '****' + idCard.slice(14);
 };
 
-const drawTextWithSpacing = (ctx, text, x, y, spacing) => {
+const drawCustomText = (ctx, text, x, y, spacing = 0) => {
   for (let i = 0; i < text.length; i++) {
-    ctx.fillText(text[i], x, y);
-    x += ctx.measureText(text[i]).width + spacing;
+    const char = text[i];
+    const charWidth = ctx.measureText(char).width;
+
+    // 将字分成多个小块
+    const numSegments = 200;
+    const segmentWidth = charWidth / numSegments;
+    const fontSize = parseInt(ctx.font, 10);
+    const extraSpace = 5; // 额外的空间，防止裁切
+
+    for (let j = 0; j < numSegments; j++) {
+      const segmentX = x + j * segmentWidth;
+      const alpha = Math.random() * 0.7 + 0.3; // 随机透明度
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(segmentX, y - fontSize - extraSpace, segmentWidth, fontSize + extraSpace * 2);
+      ctx.clip();
+
+      ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+      ctx.fillText(char, x, y);
+
+      ctx.restore();
+    }
+
+    x += charWidth + spacing;
   }
 };
 
@@ -144,7 +167,7 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.strokeStyle = '#000';
 
   // 下方略深的蓝色区域
-  ctx.fillStyle = '#87ceeb';
+  ctx.fillStyle = '#94cae0';
   ctx.beginPath();
   ctx.moveTo(30, canvasHeight * 0.9);
   ctx.lineTo(canvasWidth - 20, canvasHeight * 0.9);
@@ -162,8 +185,8 @@ const drawTicketDetails = (canvas, ctx) => {
   const startStation = props.ticketInfo.startStation;
   const endStation = props.ticketInfo.endStation;
   const stationSpacing = 10; // 设置字间隔
-  drawTextWithSpacing(ctx, startStation, 110, 80, stationSpacing);
-  drawTextWithSpacing(ctx, endStation, canvasWidth / 2 + 120, 80, stationSpacing);
+  drawCustomText(ctx, startStation, 110, 80, stationSpacing);
+  drawCustomText(ctx, endStation, canvasWidth / 2 + 120, 80, stationSpacing);
 
   ctx.font = '30px FangSong';
   let startStationPinyin = pinyin(startStation, { toneType: 'none' }).replace(/ /g, '');
@@ -173,13 +196,13 @@ const drawTicketDetails = (canvas, ctx) => {
   const startStationPinyinWidth = getTextWidth(ctx, startStationPinyin);
   const endStationPinyinWidth = getTextWidth(ctx, endStationPinyin);
 
-  drawTextWithSpacing(ctx, startStationPinyin, 200 - startStationPinyinWidth / 2, 115, -1)
-  drawTextWithSpacing(ctx, endStationPinyin, canvasWidth / 2 + 220 - endStationPinyinWidth / 2, 115, -1)
+  drawCustomText(ctx, startStationPinyin, 200 - startStationPinyinWidth / 2, 115, -1)
+  drawCustomText(ctx, endStationPinyin, canvasWidth / 2 + 220 - endStationPinyinWidth / 2, 115, -1)
 
   ctx.font = '42px Simsun';
   const trainNumber = props.ticketInfo.trainNumber;
   const trainNumberWidth = getTextWidth(ctx, trainNumber) + 2 * trainNumber.length;
-  drawTextWithSpacing(ctx, trainNumber, canvasWidth / 2 - trainNumberWidth / 2, 75, 2);
+  drawCustomText(ctx, trainNumber, canvasWidth / 2 - trainNumberWidth / 2, 75, 2);
   const arrowStartX = canvasWidth / 2 - 60;
   const arrowStartY = 82;
   const arrowLength = 120;
@@ -193,8 +216,8 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.stroke();
 
   ctx.font = '28px Simsun';
-  ctx.fillText('站', 270, 75);
-  ctx.fillText('站', canvasWidth - 160, 75);
+  drawCustomText(ctx, '站', 270, 75);
+  drawCustomText(ctx, '站', canvasWidth - 160, 75);
 
   // 日期、时间、座位号
   ctx.font = '40px Simhei';
@@ -202,50 +225,50 @@ const drawTicketDetails = (canvas, ctx) => {
   const year = date.getFullYear().toString();
   const month = date.getMonth() + 1 > 9 ? (date.getMonth() + 1).toString() : '0' + (date.getMonth() + 1);
   const day = date.getDate() > 9 ? date.getDate().toString() : '0' + date.getDate();
-  drawTextWithSpacing(ctx, year, leftOffset + 10, 170, -2)
-  drawTextWithSpacing(ctx, month, leftOffset + 118, 170, -2)
-  drawTextWithSpacing(ctx, day, leftOffset + 180, 170, -2)
-  drawTextWithSpacing(ctx, props.ticketInfo.time, leftOffset + 248, 170, -2)
-  drawTextWithSpacing(ctx, props.ticketInfo.seatCarriage, canvasWidth / 2 + 120, 170, -2)
-  drawTextWithSpacing(ctx, props.ticketInfo.seatNumber, canvasWidth / 2 + 175, 170, -2)
+  drawCustomText(ctx, year, leftOffset + 10, 170, -2)
+  drawCustomText(ctx, month, leftOffset + 118, 170, -2)
+  drawCustomText(ctx, day, leftOffset + 180, 170, -2)
+  drawCustomText(ctx, props.ticketInfo.time, leftOffset + 248, 170, -2)
+  drawCustomText(ctx, props.ticketInfo.seatCarriage, canvasWidth / 2 + 120, 170, -2)
+  drawCustomText(ctx, props.ticketInfo.seatNumber, canvasWidth / 2 + 175, 170, -2)
   
   ctx.font = '21px FangSong';
-  ctx.fillText('年', leftOffset + 90, 164);
-  ctx.fillText('月', leftOffset + 155, 164);
-  ctx.fillText('日', leftOffset + 218, 164);
-  ctx.fillText('开', leftOffset + 345, 164);
-  ctx.fillText('车', leftOffset + 515, 164);
-  ctx.fillText('号', leftOffset + 590, 164);
-  ctx.fillText('元', leftOffset + 122, 210);
+  drawCustomText(ctx, '年', leftOffset + 90, 164);
+  drawCustomText(ctx, '月', leftOffset + 155, 164);
+  drawCustomText(ctx, '日', leftOffset + 218, 164);
+  drawCustomText(ctx, '开', leftOffset + 345, 164);
+  drawCustomText(ctx, '车', leftOffset + 515, 164);
+  drawCustomText(ctx, '号', leftOffset + 590, 164);
+  drawCustomText(ctx, '元', leftOffset + 122, 210);
 
   // 票价、额外信息、座位类型
   ctx.font = '40px SimSun';
-  ctx.fillText('￥', leftOffset + 15, 215);
+  drawCustomText(ctx, '￥', leftOffset + 15, 215);
   ctx.font = '40px Simhei';
-  drawTextWithSpacing(ctx, props.ticketInfo.price, leftOffset + 50, 215, -2)
+  drawCustomText(ctx, props.ticketInfo.price, leftOffset + 50, 215, -2)
 
   ctx.font = '28px SimSun';
-  ctx.fillText(props.ticketInfo.extraInfo ?? '', 180, 210);
+  drawCustomText(ctx, props.ticketInfo.extraInfo ?? '', 180, 210);
   const seatType = props.ticketInfo.seatType;
   const seatTypeWidth = getTextWidth(ctx, seatType);
 
-  ctx.fillText(seatType, 650 - seatTypeWidth / 2, 210);
+  drawCustomText(ctx, seatType, 650 - seatTypeWidth / 2, 210);
   ctx.font = '20px Arial';
   // 限乘当日当次车
   // ctx.fillText('限乘当日当次车', 40, 200);
 
   // 仅供报销使用
   ctx.font = '32px SimSun';
-  ctx.fillText('仅供报销使用', leftOffset, 330);
+  drawCustomText(ctx, '仅供报销使用', leftOffset, 330);
 
   ctx.font = '40px FangSong';
 
   // 身份证号码和姓名
   const id = maskedId(props.ticketInfo.passengerId);
   const idWidth = getTextWidth(ctx, id);
-  drawTextWithSpacing(ctx, id, leftOffset, 370, -3)
+  drawCustomText(ctx, id, leftOffset, 370, -3)
   ctx.font = '36px SimSun';
-  ctx.fillText(props.ticketInfo.passengerName, leftOffset + idWidth + 10 - 48, 370);
+  drawCustomText(ctx, props.ticketInfo.passengerName, leftOffset + idWidth + 10 - 48, 370);
 
   // 虚线框
   const dashWidth = 440;
@@ -260,13 +283,13 @@ const drawTicketDetails = (canvas, ctx) => {
   const text1Width = getTextWidth(ctx, text1);
   const text2 = '退票改签时须交回车站';
   const text2Width = getTextWidth(ctx, text2);
-  ctx.fillText(text1, dashLeft + dashWidth / 2 - text1Width / 2, 408);
-  ctx.fillText(text2, dashLeft + dashWidth / 2 - text2Width / 2, 440);
+  drawCustomText(ctx, text1, dashLeft + dashWidth / 2 - text1Width / 2, 408);
+  drawCustomText(ctx, text2, dashLeft + dashWidth / 2 - text2Width / 2, 440);
 
   // 车票ID和售票点
   ctx.font = ' 24px FangSong';
   const bottomOffset = Math.floor(Math.random() * 25) + 10;
-  ctx.fillText(props.ticketInfo.id + ' JM', leftOffset, canvasHeight - 50 + bottomOffset);
+  drawCustomText(ctx, props.ticketInfo.id + ' JM', leftOffset, canvasHeight - 50 + bottomOffset);
   // ctx.fillText(props.ticketInfo.ticketOffice, 300, canvasHeight - 28);
 
   
