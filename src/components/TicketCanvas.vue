@@ -7,6 +7,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { pinyin } from 'pinyin-pro';
+import CRHImage from '@/assets/img/CRH.jpg';
 
 const props = defineProps({
   ticketInfo: {
@@ -42,6 +43,24 @@ const drawTicket = () => {
   const canvas = ticketCanvas.value;
   const ctx = canvas.getContext('2d');
 
+  const backgroundImage = new Image();
+  backgroundImage.src = CRHImage;
+  backgroundImage.onload = () => {
+    const padding = 20;
+    const imgWidth = canvasWidth - 2 * padding;
+    const imgHeight = canvasHeight - 2 * padding;
+    const centerX = padding;
+    const centerY = padding;
+
+    ctx.globalAlpha = 0.08;
+    ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight);
+    ctx.globalAlpha = 1.0;
+
+    drawTicketDetails(ctx);
+  };
+};
+
+const drawTicketDetails = (ctx) => {
   // 背景
   ctx.fillStyle = 'rgba(173, 216, 230, .5)';
   ctx.beginPath();
