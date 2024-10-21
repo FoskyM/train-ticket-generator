@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import type { TicketData } from '@/types';
 import TicketReceipt from '@/components/TicketReceipt.vue';
 
 const tabs = ref([
@@ -11,34 +12,7 @@ const tabs = ref([
   { label: '纸板票(1代纸板火车票)', key: 'ticket1g'}
 ]);
 
-const activeTab = ref('receipt');
-
-type TicketData = {
-  id: string; // 火车票 ID
-  redId: string; // 左上角红色 ID
-  ticketOffice: string; // 售票点
-  startStation: string; // 出发地
-  endStation: string; // 目的地
-  trainNumber: string; // 车次
-  date: string; // 日期
-  time: string; // 时间
-  price: number; // 价格
-
-  // 座位信息
-  seatType: string; // 座位类型
-  seatCarriage: string; // 车厢号
-  seatNumber: string; // 座位号
-
-  // 乘客信息
-  passengerName: string; // 姓名
-  passengerId: string; // 身份证号
-
-  // 其他信息
-  seatTypeCustom?: string; // 自定义座位类型
-  checkGate?: string; // 检票口
-  isStudent?: boolean; // 是否学生票
-  isDiscount?: boolean; // 是否优惠票
-};
+const activeTab = ref('');
 
 const seatTypeList = ref([
   '商务座',
@@ -78,23 +52,23 @@ const fieldInfo = ref({
 });
 
 const ticketInfo = ref<TicketData>({
-  id: '5166430030905Q041902',
-  redId: 'Z160Q041902',
-  ticketOffice: '临高南',
-  startStation: '临高南',
-  endStation: '海口东',
-  trainNumber: 'D7162',
-  date: '2018-09-04',
-  time: '13:02',
-  price: 24.0,
+  id: '32537301731021L088888',
+  redId: 'Z160L088888',
+  ticketOffice: '杭州东',
+  startStation: '杭州东',
+  endStation: '北京南',
+  trainNumber: 'G176',
+  date: '2024-10-21',
+  time: '18:57',
+  price: 623.0,
   seatType: '二等座',
   seatCarriage: '03',
-  seatNumber: '16B',
-  passengerName: '张三',
-  passengerId: '370921199024131424',
+  seatNumber: '03F',
+  passengerName: '傅四霁',
+  passengerId: '3301022004010100001234',
 
   seatTypeCustom: '二等座始发改签',
-  checkGate: '2号检票口',
+  checkGate: '18B',
   isStudent: false,
   isDiscount: true,
 });
@@ -214,7 +188,11 @@ watch(() => ticketInfo.value.isStudent, (value) => {
       <div>
         <div class="ticket-container py-4">
           <TicketReceipt :ticketInfo="ticketInfo" v-if="activeTab == 'receipt'"/>
-
+          <template v-else-if="activeTab == ''">
+            <h2 class="text-2xl">
+              请选择车票类型
+            </h2>
+          </template>
           <template v-else>
             <h2 class="text-2xl">
               其它车票仍在开发中，敬请期待！
