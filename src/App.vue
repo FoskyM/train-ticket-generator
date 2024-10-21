@@ -43,7 +43,7 @@ const fieldInfo = ref({
   seatCarriage: { label: '车厢号', type: 'text', colSpan: 1 },
   seatNumber: { label: '座位号', type: 'text', colSpan: 1 },
   passengerName: { label: '乘客姓名', type: 'text', colSpan: 1 },
-  passengerId: { label: '身份证号', type: 'text', colSpan: 1 },
+  passengerId: { label: '身份证号', type: 'text', colSpan: 1, maxLength: 18 },
 
   seatTypeCustom: { label: '自定义座位类型', type: 'text', colSpan: 1 },
   checkGate: { label: '检票口', type: 'text', colSpan: 1 },
@@ -62,10 +62,10 @@ const ticketInfo = ref<TicketData>({
   time: '18:57',
   price: 623.0,
   seatType: '二等座',
-  seatCarriage: '03',
-  seatNumber: '03F',
+  seatCarriage: '08',
+  seatNumber: '08F',
   passengerName: '傅四霁',
-  passengerId: '3301022004010100001234',
+  passengerId: '330102200401011234',
 
   seatTypeCustom: '二等座始发改签',
   checkGate: '18B',
@@ -93,6 +93,10 @@ const generateFormFields = () => {
       field.step = '0.01';
     } else if (field.type === 'number') {
       field.step = '1';
+    } else if (field.type === 'text') {
+      if (fieldInfo.value[field.key].maxLength) {
+        field.maxLength = fieldInfo.value[field.key].maxLength;
+      }
     }
   }
   return fields;
@@ -164,6 +168,7 @@ watch(() => ticketInfo.value.isStudent, (value) => {
                 <input
                   :type="field.type"
                   :step="field.step || null"
+                  :maxlength="field.maxLength || null"
                   :id="field.key"
                   :disabled="field.disabled"
                   v-model="ticketInfo[field.key]"
