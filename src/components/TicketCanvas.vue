@@ -130,13 +130,13 @@ const drawTicketDetails = (canvas, ctx) => {
   drawTrapezoid(10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left');
   drawTrapezoid(canvasWidth - 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'right');
 
+  // 斜线纹理部分，需要改进，斜线不要超出圆角、梯形小块应有斜线
+
   // 设置线条样式
-  ctx.strokeStyle = 'rgba(173, 216, 230, .5)'; // 颜色略比底色深
+  ctx.strokeStyle = 'rgba(173, 216, 230, .5)';
   ctx.lineWidth = 1;
 
   const angle = - Math.PI / 6;
-
-  // 绘制多个60度的斜线
   const spacing = 5; // 斜线之间的间距
   let bottomStartX = 0;
   for (let i = 20; i < canvas.width - 20; i += spacing) {
@@ -310,8 +310,8 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, text1, dashLeft + dashWidth / 2 - text1Width / 2, 408);
   drawCustomText(ctx, text2, dashLeft + dashWidth / 2 - text2Width / 2, 440);
 
-  // 二维码
-  const qrCodeText = 'https://github.com/FoskyM';
+  // 二维码，暂时使用 GitHub 链接，车票二维码貌似是一个加密串
+  const qrCodeText = 'https://github.com/FoskyM/train-ticket-generator';
   const qrCodeWidth = 120;
   const qrCodeOptions = {
     width: qrCodeWidth,
@@ -336,8 +336,7 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, props.ticketInfo.id + ' JM', leftOffset, canvasHeight - 50 + bottomOffset);
   // ctx.fillText(props.ticketInfo.ticketOffice, 300, canvasHeight - 28);
 
-  
-  // 车票ID后七位
+  // 左上角红色 ID
   ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
   ctx.font = ' 42px Arial';
   ctx.fillText(props.ticketInfo.redId, 80, 65);
