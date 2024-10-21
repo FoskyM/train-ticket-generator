@@ -1,10 +1,24 @@
 <template>
-  <div class="ticket-container">
-    <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+  <div class="tab">
+    <div class="tab-item" v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key" :class="{ active: activeTab === tab.key }">{{ tab.label }}</div>
   </div>
-  <div class="ticket-container">
-    <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+
+  <div v-show="activeTab == 'ticket2D'">
+    <div class="ticket-container">
+      <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+    </div>
+    <div class="ticket-container">
+      <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+    </div>
   </div>
+  <div v-show="activeTab == 'ticket3D'">
+    <h2 class="text-2xl">
+      3D 渲染仍在开发中，敬请期待！
+    </h2>
+    <!-- <div class="ticket-container">
+      <canvas ref="ticket3DCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+    </div> -->
+  </div> 
 </template>
 
 <script setup>
@@ -21,6 +35,13 @@ const props = defineProps({
     required: true
   }
 });
+
+const tabs = ref([
+  { label: '2D', key: 'ticket2D' },
+  { label: '3D', key: 'ticket3D' }
+]);
+
+const activeTab = ref('ticket2D');
 
 const protrusionHeight = 40;
 const protrusionWidth = 10;
@@ -321,9 +342,24 @@ watch(() => props.ticketInfo, () => {
 
 <style scoped>
 .ticket-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+  @apply flex justify-center items-center p-4;
+}
+.tab {
+  @apply flex justify-center items-center;
+}
+.tab-item {
+  @apply cursor-pointer px-2 border border-gray-300 select-none;
+}
+.tab-item:first-child {
+  @apply rounded-tl-md rounded-bl-md;
+}
+.tab-item:last-child {
+  @apply rounded-tr-md rounded-br-md;
+}
+.tab-item:hover {
+  @apply bg-gray-100;
+}
+.tab-item.active {
+  @apply bg-gray-200;
 }
 </style>
