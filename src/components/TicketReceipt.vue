@@ -64,6 +64,9 @@ const drawTicket = () => {
   const canvas = ticketCanvas.value;
   const ctx = canvas.getContext('2d');
 
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   const backgroundImage = new Image();
   backgroundImage.src = CRHImage;
   backgroundImage.onload = () => {
@@ -359,6 +362,9 @@ const drawTicketBack = () => {
   const canvas = ticketBackCanvas.value;
   const ctx = canvas.getContext('2d');
 
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
   // 圆角矩形
   drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(0, 0, 0, .9)');
   // 两边凸出的梯形小块
