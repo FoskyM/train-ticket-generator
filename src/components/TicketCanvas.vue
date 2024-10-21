@@ -47,8 +47,8 @@ const protrusionHeight = 40;
 const protrusionWidth = 10;
 const canvasWidth = 876;
 const canvasHeight = 539;
-const leftOffset = 80;
-const topOffset = 20;
+let leftOffset = 80;
+let topOffset = 20;
 
 const ticketCanvas = ref(null);
 const ticketBackCanvas = ref(null);
@@ -165,8 +165,19 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.fillStyle = pattern;
   ctx.fillRect(20, canvasHeight * 0.88, canvasWidth - 40, 20);
 
-  // 始发站、车次、目的地
   ctx.fillStyle = '#000';
+  // 检票口
+  ctx.font = '24px SimSun';
+  if (props.ticketInfo.checkGate !== '') {
+    const checkGateText = '检票:' + props.ticketInfo.checkGate;
+    const checkGateWidth = getTextWidth(ctx, checkGateText);
+    drawCustomText(ctx, checkGateText, canvasWidth - checkGateWidth - 100, 60);
+    topOffset = 35;
+  } else {
+    topOffset = 20;
+  }
+
+  // 始发站、车次、目的地
   ctx.font = '45px SimHei';
   const startStation = props.ticketInfo.startStation;
   const endStation = props.ticketInfo.endStation;
@@ -216,7 +227,7 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, day, leftOffset + 180, topOffset + 170, -2)
   drawCustomText(ctx, props.ticketInfo.time, leftOffset + 248, topOffset + 170, -2)
 
-  // 座位号
+  // 座位号、车厢号、座位类型
   const seatCarriage = props.ticketInfo.seatCarriage.padStart(2, '0');
   let seatNumber = props.ticketInfo.seatNumber.padStart(3, '0');
   drawCustomText(ctx, seatCarriage, canvasWidth / 2 + 120, topOffset + 170, -2)
@@ -231,6 +242,12 @@ const drawTicketDetails = (canvas, ctx) => {
     drawCustomText(ctx, seatNumber, canvasWidth / 2 + 182, topOffset + 170, -3)
   }
   
+  ctx.font = '28px SimSun';
+  // drawCustomText(ctx, props.ticketInfo.extraInfo ?? '', 180, topOffset + 210);
+  const seatType = props.ticketInfo.seatTypeCustom == '' ? props.ticketInfo.seatType : props.ticketInfo.seatTypeCustom;
+  const seatTypeWidth = getTextWidth(ctx, seatType);
+  drawCustomText(ctx, seatType, 650 - seatTypeWidth / 2, topOffset + 210);
+
   ctx.font = '21px FangSong';
   drawCustomText(ctx, '年', leftOffset + 90, topOffset + 164);
   drawCustomText(ctx, '月', leftOffset + 155, topOffset + 164);
@@ -240,19 +257,40 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, '号', leftOffset + 594, topOffset + 164);
   drawCustomText(ctx, '元', leftOffset + 122, topOffset + 210);
 
-  // 票价、额外信息、座位类型
+  // 票价、额外信息
   ctx.font = '40px SimSun';
   drawCustomText(ctx, '￥', leftOffset + 15, topOffset + 215);
   ctx.font = '40px Simhei';
   const price = props.ticketInfo.price.toFixed(1).toString();
-  drawCustomText(ctx, price, leftOffset + 50, topOffset + 215, -2)
+  drawCustomText(ctx, price, leftOffset + 50, topOffset + 215, -2);
+  ctx.font = '32px SimSun';
+  if (props.ticketInfo.isStudent) {
+    const studentText = '学';
+    const studentWidth = getTextWidth(ctx, studentText);
+    drawCustomText(ctx, studentText, canvasWidth / 2 - studentWidth - 60, topOffset + 210);
 
-  ctx.font = '28px SimSun';
-  drawCustomText(ctx, props.ticketInfo.extraInfo ?? '', 180, topOffset + 210);
-  const seatType = props.ticketInfo.seatType;
-  const seatTypeWidth = getTextWidth(ctx, seatType);
+    ctx.beginPath();
+    ctx.arc(canvasWidth / 2 - studentWidth / 2 - 60, topOffset + 198, 17, 0, 2 * Math.PI);
+    ctx.stroke();
 
-  drawCustomText(ctx, seatType, 650 - seatTypeWidth / 2, topOffset + 210);
+    const discountText = '惠';
+    const discountWidth = getTextWidth(ctx, discountText);
+    drawCustomText(ctx, discountText, canvasWidth / 2 - discountWidth - 10, topOffset + 210);
+
+    ctx.beginPath();
+    ctx.arc(canvasWidth / 2 - discountWidth / 2 - 10, topOffset + 198, 17, 0, 2 * Math.PI);
+    ctx.stroke();
+
+  } else if (props.ticketInfo.isDiscount) {
+    const discountText = '惠';
+    const discountWidth = getTextWidth(ctx, discountText);
+    drawCustomText(ctx, discountText, canvasWidth / 2 - discountWidth - 20, topOffset + 210);
+
+    ctx.beginPath();
+    ctx.arc(canvasWidth / 2 - discountWidth / 2 - 20, topOffset + 198, 17, 0, 2 * Math.PI);
+    ctx.stroke();
+  }
+
   ctx.font = '20px Arial';
   // 限乘当日当次车
   // ctx.fillText('限乘当日当次车', 40, 200);

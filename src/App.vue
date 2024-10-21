@@ -23,7 +23,10 @@ type TicketData = {
   passengerId: string; // 身份证号
 
   // 其他信息
-  extraInfo?: string; // 额外信息
+  seatTypeCustom?: string; // 自定义座位类型
+  checkGate?: string; // 检票口
+  isStudent?: boolean; // 是否学生票
+  isDiscount?: boolean; // 是否优惠票
 };
 
 const seatTypeList = ref([
@@ -56,6 +59,11 @@ const fieldInfo = ref({
   seatNumber: { label: '座位号', type: 'text', colSpan: 1 },
   passengerName: { label: '乘客姓名', type: 'text', colSpan: 1 },
   passengerId: { label: '身份证号', type: 'text', colSpan: 1 },
+
+  seatTypeCustom: { label: '自定义座位类型', type: 'text', colSpan: 1 },
+  checkGate: { label: '检票口', type: 'text', colSpan: 1 },
+  isStudent: { label: '学生票', type: 'checkbox', colSpan: 1 },
+  isDiscount: { label: '优惠票', type: 'checkbox', colSpan: 1 },
 });
 
 const ticketInfo = ref<TicketData>({
@@ -73,6 +81,11 @@ const ticketInfo = ref<TicketData>({
   seatNumber: '16B',
   passengerName: '张三',
   passengerId: '370921199024131424',
+
+  seatTypeCustom: '二等座始发改签',
+  checkGate: '2号检票口',
+  isStudent: false,
+  isDiscount: true,
 });
 
 const generateFormFields = () => {
@@ -83,7 +96,8 @@ const generateFormFields = () => {
       key,
       label: fieldInfo.value[key].label,
       type: fieldInfo.value[key].type,
-      colSpan: fieldInfo.value[key].colSpan
+      colSpan: fieldInfo.value[key].colSpan,
+      disabled: false
     });
   }
   for (const field of fields) {
@@ -100,6 +114,15 @@ const generateFormFields = () => {
 };
 
 const formFields = generateFormFields();
+
+watch(() => ticketInfo.value.isStudent, (value) => {
+  if (value) {
+    ticketInfo.value.isDiscount = true;
+    fieldInfo.value.isDiscount.disabled = true;
+  } else {
+    fieldInfo.value.isDiscount.disabled = false;
+  }
+}, { deep: true });
 </script>
 
 <template>
@@ -128,6 +151,7 @@ const formFields = generateFormFields();
                 <select
                   v-model="ticketInfo[field.key]"
                   :id="field.key"
+                  :disabled="field.disabled"
                   class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
                   <option v-for="item in field.data" :key="item" :value="item">
@@ -135,11 +159,28 @@ const formFields = generateFormFields();
                   </option>
                 </select>
               </template>
+              <template v-else-if="field.type === 'checkbox'">
+                <div class="flex items-center">
+                  <input
+                    :type="field.type"
+                    :id="field.key"
+                    :disabled="fieldInfo[field.key].disabled"
+                    v-model="ticketInfo[field.key]"
+                    class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <label
+                    :for="field.key"
+                    class="ml-2 block text-sm text-gray-900 select-none"
+                    >{{ field.label }}</label
+                  >
+                </div>
+              </template>
               <template v-else>
                 <input
                   :type="field.type"
                   :step="field.step || null"
                   :id="field.key"
+                  :disabled="field.disabled"
                   v-model="ticketInfo[field.key]"
                   class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
