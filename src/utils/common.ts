@@ -3,7 +3,7 @@ const maskedId = (idCard: string) => {
 };
 
 const getStationSpacing = (stationText: string): number => {
-  if (stationText.length == 4) {
+  if (stationText.length >= 4) {
     return -6;
   } else if (stationText.length == 3) {
     return 10;

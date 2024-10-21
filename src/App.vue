@@ -53,28 +53,28 @@ const seatTypeList = ref([
 ]);
 
 const fieldInfo = ref<any>({
-  id: { label: '火车票 ID', type: 'text', colSpan: 2 },
-  redId: { label: '红色 ID', type: 'text', colSpan: 2 },
-  ticketOffice: { label: '售票点', type: 'text', colSpan: 1 },
-  startStation: { label: '出发地', type: 'text', colSpan: 1 },
-  endStation: { label: '目的地', type: 'text', colSpan: 1 },
-  trainNumber: { label: '车次', type: 'text', colSpan: 1 },
+  id: { label: '火车票 ID', type: 'text', colSpan: 2, onlyEnglishAndNumber: true, maxLength: 21 },
+  redId: { label: '红色 ID', type: 'text', colSpan: 2, onlyEnglishAndNumber: true, maxLength: 11 },
+  ticketOffice: { label: '售票点', type: 'text', colSpan: 1, onlyChinese: true },
+  startStation: { label: '出发地', type: 'text', colSpan: 1, maxLength: 5, onlyChinese: true },
+  endStation: { label: '目的地', type: 'text', colSpan: 1, maxLength: 5, onlyChinese: true },
+  trainNumber: { label: '车次', type: 'text', colSpan: 1, maxLength: 6, onlyEnglishAndNumber: true },
   date: { label: '日期', type: 'date', colSpan: 1 },
   time: { label: '时间', type: 'time', colSpan: 1 },
-  price: { label: '价格', type: 'float', colSpan: 1 },
+  price: { label: '价格', type: 'float', colSpan: 1, maxValue: 50000 },
   seatType: {
     label: '座位类型',
     type: 'select',
     data: seatTypeList,
     colSpan: 1,
   },
-  seatCarriage: { label: '车厢号', type: 'text', colSpan: 1 },
-  seatNumber: { label: '座位号', type: 'text', colSpan: 1 },
-  passengerName: { label: '乘客姓名', type: 'text', colSpan: 1 },
+  seatCarriage: { label: '车厢号', type: 'number', colSpan: 1, maxValue: 99 },
+  seatNumber: { label: '座位号', type: 'text', colSpan: 1, maxLength: 3, onlyEnglishAndNumber: true },
+  passengerName: { label: '乘客姓名', type: 'text', colSpan: 1, maxLength: 12, onlyChinese: true },
   passengerId: { label: '身份证号', type: 'text', colSpan: 1, maxLength: 18 },
 
-  seatTypeCustom: { label: '自定义座位类型', type: 'text', colSpan: 1 },
-  checkGate: { label: '检票口', type: 'text', colSpan: 1 },
+  seatTypeCustom: { label: '自定义座位类型', type: 'text', colSpan: 1, maxLength: 12, onlyChinese: true },
+  checkGate: { label: '检票口', type: 'text', colSpan: 1, maxLength: 12 },
   isStudent: { label: '学生票', type: 'checkbox', colSpan: 1 },
   isDiscount: { label: '优惠票', type: 'checkbox', colSpan: 1 },
 });
@@ -101,6 +101,45 @@ const ticketInfo = ref<TicketData>({
   isDiscount: true,
 });
 
+let isComposing = false;
+
+const validateChineseInput = (event: Event) => {
+  if (isComposing) return;
+  const input = event.target as HTMLInputElement;
+  const chineseRegex = /^[\u4e00-\u9fa5]*$/;
+  if (!chineseRegex.test(input.value)) {
+    input.value = input.value.replace(/[^\u4e00-\u9fa5]/g, '');
+  }
+};
+
+const handleCompositionStart = () => {
+  isComposing = true;
+};
+
+const handleCompositionEnd = (event: Event) => {
+  isComposing = false;
+  validateChineseInput(event);
+};
+
+const validateEnglishAndNumberInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const englishAndNumberRegex = /^[A-Za-z0-9]*$/;
+  if (!englishAndNumberRegex.test(input.value)) {
+    input.value = input.value.replace(/[^A-Za-z0-9]/g, '');
+  }
+};
+
+const validateNumberInput = (event: Event, maxValue: number) => {
+  const input = event.target as HTMLInputElement;
+  const numberRegex = /^[0-9]*$/;
+  if (!numberRegex.test(input.value)) {
+    input.value = input.value.replace(/[^0-9]/g, '');
+  }
+  if (parseInt(input.value) > maxValue) {
+    input.value = maxValue.toString();
+  }
+};
+
 const generateFormFields = () => {
   const fields: any = [];
   for (const key in ticketInfo.value) {
@@ -125,6 +164,17 @@ const generateFormFields = () => {
       if (fieldInfo.value[field.key].maxLength) {
         field.maxLength = fieldInfo.value[field.key].maxLength;
       }
+    }
+
+    if (fieldInfo.value[field.key].maxValue) {
+      field.max = fieldInfo.value[field.key].maxValue;
+      field.onInput = (event: Event) => validateNumberInput(event, fieldInfo.value[field.key].maxValue);
+    }
+
+    if (fieldInfo.value[field.key].onlyChinese) {
+      field.onInput = validateChineseInput;
+    } else if (fieldInfo.value[field.key].onlyEnglishAndNumber) {
+      field.onInput = validateEnglishAndNumberInput;
     }
   }
   return fields;
@@ -212,8 +262,12 @@ watch(() => ticketInfo.value.isStudent, (value) => {
                   :type="field.type"
                   :step="field.step || null"
                   :maxlength="field.maxLength || null"
+                  :max="field.max || null"
                   :id="field.key"
                   :disabled="field.disabled"
+                  @input="field.onInput ? field.onInput($event) : null"
+                  @compositionstart="handleCompositionStart"
+                  @compositionend="handleCompositionEnd"
                   v-model="ticketInfo[field.key]"
                   class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />

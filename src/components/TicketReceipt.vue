@@ -181,11 +181,15 @@ const drawTicketDetails = (canvas, ctx) => {
   }
 
   // 始发站、车次、目的地
-  ctx.font = '45px SimHei';
   const startStation = props.ticketInfo.startStation;
   const endStation = props.ticketInfo.endStation;
-  drawCustomText(ctx, startStation, 110, topOffset + 80, getStationSpacing(startStation));
-  drawCustomText(ctx, endStation, canvasWidth / 2 + 120, topOffset + 80, getStationSpacing(endStation));
+  ctx.font = '45px SimHei';
+  let left = 110;
+  if (startStation.length == 5) left = 70;
+  drawCustomText(ctx, startStation, left, topOffset + 80, getStationSpacing(startStation));
+  left = canvasWidth / 2 + 120;
+  if (endStation.length == 5) left = canvasWidth / 2 + 80;
+  drawCustomText(ctx, endStation, left, topOffset + 80, getStationSpacing(endStation));
 
   ctx.font = '30px FangSong';
   let startStationPinyin = pinyin(startStation, { toneType: 'none' }).replace(/ /g, '');
