@@ -205,7 +205,7 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, '站', 270, topOffset + 75);
   drawCustomText(ctx, '站', canvasWidth - 160, topOffset + 75);
 
-  // 日期、时间、座位号
+  // 日期、时间
   ctx.font = '40px Simhei';
   const date = new Date(props.ticketInfo.date);
   const year = date.getFullYear().toString();
@@ -215,8 +215,21 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, month, leftOffset + 118, topOffset + 170, -2)
   drawCustomText(ctx, day, leftOffset + 180, topOffset + 170, -2)
   drawCustomText(ctx, props.ticketInfo.time, leftOffset + 248, topOffset + 170, -2)
-  drawCustomText(ctx, props.ticketInfo.seatCarriage, canvasWidth / 2 + 120, topOffset + 170, -2)
-  drawCustomText(ctx, props.ticketInfo.seatNumber, canvasWidth / 2 + 175, topOffset + 170, -2)
+
+  // 座位号
+  const seatCarriage = props.ticketInfo.seatCarriage.padStart(2, '0');
+  let seatNumber = props.ticketInfo.seatNumber.padStart(3, '0');
+  drawCustomText(ctx, seatCarriage, canvasWidth / 2 + 120, topOffset + 170, -2)
+  // 如果最后一位是字母，进行处理
+  if (isNaN(parseInt(seatNumber.slice(-1)))) {
+    const seatNumberLast = seatNumber.slice(-1);
+    seatNumber = seatNumber.slice(0, -1);
+    drawCustomText(ctx, seatNumber, canvasWidth / 2 + 182, topOffset + 170, -3)
+    ctx.font = '32px SimSun';
+    drawCustomText(ctx, seatNumberLast, canvasWidth / 2 + 182 + 38, topOffset + 167, -3)
+  } else {
+    drawCustomText(ctx, seatNumber, canvasWidth / 2 + 182, topOffset + 170, -3)
+  }
   
   ctx.font = '21px FangSong';
   drawCustomText(ctx, '年', leftOffset + 90, topOffset + 164);
@@ -224,7 +237,7 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, '日', leftOffset + 218, topOffset + 164);
   drawCustomText(ctx, '开', leftOffset + 345, topOffset + 164);
   drawCustomText(ctx, '车', leftOffset + 515, topOffset + 164);
-  drawCustomText(ctx, '号', leftOffset + 590, topOffset + 164);
+  drawCustomText(ctx, '号', leftOffset + 594, topOffset + 164);
   drawCustomText(ctx, '元', leftOffset + 122, topOffset + 210);
 
   // 票价、额外信息、座位类型
