@@ -11,6 +11,8 @@
 import { ref, onMounted, watch } from 'vue';
 import { pinyin } from 'pinyin-pro';
 import QRCode from 'qrcode';
+import { drawCustomText, getTextWidth, drawParagraph, drawTrapezoid, drawRoundRect } from '@/utils/canvas';
+import { maskedId } from '@/utils/common';
 import CRHImage from '@/assets/img/CRH.jpg';
 
 const props = defineProps({
@@ -29,69 +31,6 @@ const topOffset = 20;
 
 const ticketCanvas = ref(null);
 const ticketBackCanvas = ref(null);
-
-const maskedId = (idCard) => {
-  return idCard.slice(0, 10) + '****' + idCard.slice(14);
-};
-
-const drawCustomText = (ctx, text, x, y, spacing = 0, color = [0,0,0]) => {
-  const colorStr = `${color[0]}, ${color[1]}, ${color[2]}`;
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const charWidth = ctx.measureText(char).width;
-
-    // 将字分成多个小块
-    const numSegments = 200;
-    const segmentWidth = charWidth / numSegments;
-    const fontSize = parseInt(ctx.font, 10);
-    const extraSpace = 5; // 额外的空间，防止裁切
-
-    for (let j = 0; j < numSegments; j++) {
-      const segmentX = x + j * segmentWidth;
-      const alpha = Math.random() * 0.7 + 0.3; // 随机透明度
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(segmentX, y - fontSize - extraSpace, segmentWidth, fontSize + extraSpace * 2);
-      ctx.clip();
-
-      ctx.fillStyle = `rgba(${colorStr}, ${alpha})`;
-      ctx.fillText(char, x, y);
-
-      ctx.restore();
-    }
-
-    x += charWidth + spacing;
-  }
-};
-
-const drawParagraph = (ctx, paragraphs, indent, x, y, lineSapce, maxWidth, spacing = 0, color = [0,0,0]) => {
-  paragraphs.forEach((paragraph) => {
-    let words = paragraph.split('');
-    let line = '';
-    let isFirstLine = true;
-
-    for (let n = 0; n < words.length; n++) {
-      let testLine = line + words[n] + '';
-      let testWidth = ctx.measureText(testLine).width + (isFirstLine ? indent : 0);
-
-      if (testWidth > maxWidth && line !== '') {
-        drawCustomText(ctx, line, x + (isFirstLine ? indent : 0), y, 0, color);
-        line = words[n] + '';
-        y += lineSapce;
-        isFirstLine = false;
-      } else {
-        line = testLine;
-      }
-    }
-    drawCustomText(ctx, line, x + (isFirstLine ? indent : 0), y, 0, color);
-    y += lineSapce;
-  });
-};
-
-const getTextWidth = (ctx, text) => {
-  return ctx.measureText(text).width;
-};
 
 const destroyCanvas = () => {
   const canvas = ticketCanvas.value;
@@ -123,41 +62,15 @@ const drawTicket = () => {
 };
 
 const drawTicketDetails = (canvas, ctx) => {
-  
   // 圆角矩形
-  ctx.fillStyle = 'rgba(173, 216, 230, .2)';
-  ctx.beginPath();
-  ctx.moveTo(30, 10);
-  ctx.arcTo(canvasWidth - 20, 10, canvasWidth - 20, 30, 20);
-  ctx.arcTo(canvasWidth - 20, canvasHeight - 20, canvasWidth - 40, canvasHeight - 20, 20);
-  ctx.arcTo(20, canvasHeight - 20, 20, canvasHeight - 40, 20);
-  ctx.arcTo(20, 10, 40, 10, 20);
-  ctx.closePath();
-  ctx.fill();
+  drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(173, 216, 230, .2)');
 
   // 两边凸出的梯形小块
   ctx.fillStyle = 'rgba(173, 216, 230, .2)';
-  const drawTrapezoid = (x, y, width, height, offset, direction) => {
-    ctx.beginPath();
-    if (direction === 'left') {
-      ctx.moveTo(x, y - height / 2 + offset);
-      ctx.lineTo(x + width, y - height / 2);
-      ctx.lineTo(x + width, y + height / 2);
-      ctx.lineTo(x, y + height / 2 - offset);
-    } else {
-      ctx.moveTo(x, y - height / 2 + offset);
-      ctx.lineTo(x - width, y - height / 2);
-      ctx.lineTo(x - width, y + height / 2);
-      ctx.lineTo(x, y + height / 2 - offset);
-    }
-    ctx.closePath();
-    ctx.fill();
-  };
-
-  drawTrapezoid(10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5,  'left');
-  drawTrapezoid(canvasWidth - 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'right');
-  drawTrapezoid(10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left');
-  drawTrapezoid(canvasWidth - 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'right');
+  drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5,  'left');
+  drawTrapezoid(ctx, canvasWidth - 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'right');
+  drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left');
+  drawTrapezoid(ctx, canvasWidth - 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'right');
 
   // 斜线纹理部分，需要改进，斜线不要超出圆角、梯形小块应有斜线
 
@@ -376,38 +289,12 @@ const drawTicketBack = () => {
   const ctx = canvas.getContext('2d');
 
   // 圆角矩形
-  ctx.fillStyle = 'rgba(0, 0, 0, .9)';
-  ctx.beginPath();
-  ctx.moveTo(30, 10);
-  ctx.arcTo(canvasWidth - 20, 10, canvasWidth - 20, 30, 20);
-  ctx.arcTo(canvasWidth - 20, canvasHeight - 20, canvasWidth - 40, canvasHeight - 20, 20);
-  ctx.arcTo(20, canvasHeight - 20, 20, canvasHeight - 40, 20);
-  ctx.arcTo(20, 10, 40, 10, 20);
-  ctx.closePath();
-  ctx.fill();
-
+  drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(0, 0, 0, .9)');
   // 两边凸出的梯形小块
-  const drawTrapezoid = (x, y, width, height, offset, direction) => {
-    ctx.beginPath();
-    if (direction === 'left') {
-      ctx.moveTo(x, y - height / 2 + offset);
-      ctx.lineTo(x + width, y - height / 2);
-      ctx.lineTo(x + width, y + height / 2);
-      ctx.lineTo(x, y + height / 2 - offset);
-    } else {
-      ctx.moveTo(x, y - height / 2 + offset);
-      ctx.lineTo(x - width, y - height / 2);
-      ctx.lineTo(x - width, y + height / 2);
-      ctx.lineTo(x, y + height / 2 - offset);
-    }
-    ctx.closePath();
-    ctx.fill();
-  };
-
-  drawTrapezoid(10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5,  'left');
-  drawTrapezoid(canvasWidth - 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'right');
-  drawTrapezoid(10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left');
-  drawTrapezoid(canvasWidth - 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'right');
+  drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5,  'left');
+  drawTrapezoid(ctx, canvasWidth - 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'right');
+  drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left');
+  drawTrapezoid(ctx, canvasWidth - 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'right');
 
   ctx.font = '40px SimHei';
   const text = '报销凭证使用须知';
@@ -419,7 +306,7 @@ const drawTicketBack = () => {
   const paragraph = '☆购票后如需报销凭证的，应在开车前或乘车日期之日起180日以内(含当日)，持购票时所使用的有效身份证件原件到车站售票窗口、自动售票机领取。☆退票后如需退票费报销凭证，应在办理之日起180天以内(含当日)，持购票时所使用的有效身份证件原件到车站退票窗口领取。☆报销凭证开具后请妥善保管，丢失后将无法办理补办申领手续。☆已领取报销凭证的车票办理改签、退票或退款手续时，须交回报销凭证方可办理。☆报销凭证不能作为乘车凭证使用。☆未尽事宜见《国铁集团铁路旅客运输规程》等有关规定和车站公告。跨境旅客事宜见铁路跨境旅客相关运输组织规则和车站公告。';
 
   let paragraphs = paragraph.split('☆').filter((p) => p !== '').map((p) => '☆' + p);
-  drawParagraph(ctx, paragraphs, 40, 45, 140, 35, canvasWidth - 95, -1, color);
+  drawParagraph(ctx, paragraphs, 40, 45, 140, 35, canvasWidth - 90, -1, color);
 }
 
 onMounted(() => {
