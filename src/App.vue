@@ -1,7 +1,35 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { TicketData } from '@/types';
 import TicketReceipt from '@/components/TicketReceipt.vue';
+
+type TicketData = {
+  id: string; // 火车票 ID
+  redId: string; // 左上角红色 ID
+  ticketOffice: string; // 售票点
+  startStation: string; // 出发地
+  endStation: string; // 目的地
+  trainNumber: string; // 车次
+  date: string; // 日期
+  time: string; // 时间
+  price: number; // 价格
+
+  // 座位信息
+  seatType: string; // 座位类型
+  seatCarriage: string; // 车厢号
+  seatNumber: string; // 座位号
+
+  // 乘客信息
+  passengerName: string; // 姓名
+  passengerId: string; // 身份证号
+
+  // 其他信息
+  seatTypeCustom?: string; // 自定义座位类型
+  checkGate?: string; // 检票口
+  isStudent?: boolean; // 是否学生票
+  isDiscount?: boolean; // 是否优惠票
+
+  [key: string]: any;
+};
 
 const tabs = ref([
   { label: '蓝票(报销凭证)', key: 'receipt' },
@@ -24,7 +52,7 @@ const seatTypeList = ref([
   '软卧',
 ]);
 
-const fieldInfo = ref({
+const fieldInfo = ref<any>({
   id: { label: '火车票 ID', type: 'text', colSpan: 2 },
   redId: { label: '红色 ID', type: 'text', colSpan: 2 },
   ticketOffice: { label: '售票点', type: 'text', colSpan: 1 },
@@ -74,7 +102,7 @@ const ticketInfo = ref<TicketData>({
 });
 
 const generateFormFields = () => {
-  const fields = [];
+  const fields: any = [];
   for (const key in ticketInfo.value) {
     const value = ticketInfo.value[key];
     fields.push({
@@ -119,7 +147,22 @@ watch(() => ticketInfo.value.isStudent, (value) => {
     <div
       class="items-center justify-between p-4 rounded-lg bg-white shadow-indigo-50 shadow-md"
     >
-      <h2 class="text-2xl font-bold mb-4">火车票生成器</h2>
+      <div class="header mb-4">
+        <h2 class="text-2xl font-bold">火车票生成器</h2>
+        <p class="text-sm text-gray-500">
+          本项目仅供学习交流使用，转载请注明出处，不得用于商业或违法用途。<br />
+          图标与车票版式版权归中国铁路及相关集团所有，本项目与其无任何关联。
+        </p>
+        <div class="text-sm text-gray-500">
+          <a href="https://github.com/FoskyM/train-ticket-generator" target="_blank" class="text-indigo-500 underline">train-ticket-generator</a> © 2024 This project is licensed under AGPLv3. 2024-present copyright by <a href="https://fosky.top" target="_blank" class="text-indigo-500 underline">FoskyM</a>.
+        </div>
+        <div class="github inline-flex pt-2 gap-1">
+          <img src="https://img.shields.io/github/stars/FoskyM/train-ticket-generator.svg" alt="Stars" />
+          <img src="https://img.shields.io/github/forks/FoskyM/train-ticket-generator.svg" alt="Forks" />
+          <img src="https://img.shields.io/github/issues/FoskyM/train-ticket-generator.svg" alt="Issues" />
+        </div>
+      </div>
+      
       <div>
         <form>
           <div
