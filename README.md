@@ -7,7 +7,7 @@
 
 火车票生成器
 
-[预览地址]()
+[预览地址](https://image.fosky.top/projects/ticket/)
 
 ## 许可证
 
