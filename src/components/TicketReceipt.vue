@@ -190,8 +190,8 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.font = '30px FangSong';
   let startStationPinyin = pinyin(startStation, { toneType: 'none' }).replace(/ /g, '');
   let endStationPinyin = pinyin(endStation, { toneType: 'none' }).replace(/ /g, '');
-  startStationPinyin = startStationPinyin[0].toUpperCase() + startStationPinyin.slice(1);
-  endStationPinyin = endStationPinyin[0].toUpperCase() + endStationPinyin.slice(1);
+  if (startStationPinyin) startStationPinyin = startStationPinyin[0].toUpperCase() + startStationPinyin.slice(1);
+  if (endStationPinyin) endStationPinyin = endStationPinyin[0].toUpperCase() + endStationPinyin.slice(1);
   const startStationPinyinWidth = getTextWidth(ctx, startStationPinyin);
   const endStationPinyinWidth = getTextWidth(ctx, endStationPinyin);
 
@@ -257,14 +257,16 @@ const drawTicketDetails = (canvas, ctx) => {
   drawCustomText(ctx, '开', leftOffset + 345, topOffset + 164);
   drawCustomText(ctx, '车', leftOffset + 515, topOffset + 164);
   drawCustomText(ctx, '号', leftOffset + 594, topOffset + 164);
-  drawCustomText(ctx, '元', leftOffset + 122, topOffset + 210);
 
   // 票价、额外信息
   ctx.font = '40px SimSun';
   drawCustomText(ctx, '￥', leftOffset + 15, topOffset + 215);
   ctx.font = '40px Simhei';
-  const price = props.ticketInfo.price.toFixed(1).toString();
+  const price = (props.ticketInfo.price || 0).toFixed(1).toString();
+  const priceWidth = getTextWidth(ctx, price);
   drawCustomText(ctx, price, leftOffset + 50, topOffset + 215, -2);
+  ctx.font = '21px FangSong';
+  drawCustomText(ctx, '元', leftOffset + 42 + priceWidth, topOffset + 210);
   ctx.font = '32px SimSun';
   if (props.ticketInfo.isStudent) {
     const studentText = '学';
@@ -364,7 +366,7 @@ const drawTicketBack = () => {
 
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   // 圆角矩形
   drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(0, 0, 0, .9)');
   // 两边凸出的梯形小块
