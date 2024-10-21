@@ -78,13 +78,14 @@ const drawTicket = () => {
   const backgroundImage = new Image();
   backgroundImage.src = CRHImage;
   backgroundImage.onload = () => {
-    const padding = 20;
-    const imgWidth = canvasWidth - 2 * padding;
-    const imgHeight = canvasHeight - 2 * padding;
-    const centerX = padding;
-    const centerY = padding;
+    const paddingX = 40;
+    const paddingY = 100;
+    const imgWidth = canvasWidth - 2 * paddingX;
+    const imgHeight = canvasHeight - 2 * paddingY;
+    const centerX = paddingX;
+    const centerY = paddingY;
 
-    ctx.globalAlpha = 0.08;
+    ctx.globalAlpha = 0.05;
     ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight);
     ctx.globalAlpha = 1.0;
 
@@ -95,7 +96,7 @@ const drawTicket = () => {
 const drawTicketDetails = (canvas, ctx) => {
   
   // 圆角矩形
-  ctx.fillStyle = 'rgba(173, 216, 230, .5)';
+  ctx.fillStyle = 'rgba(173, 216, 230, .2)';
   ctx.beginPath();
   ctx.moveTo(30, 10);
   ctx.arcTo(canvasWidth - 20, 10, canvasWidth - 20, 30, 20);
@@ -106,7 +107,7 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.fill();
 
   // 两边凸出的梯形小块
-  ctx.fillStyle = 'rgba(173, 216, 230, .5)';
+  ctx.fillStyle = 'rgba(173, 216, 230, .2)';
   const drawTrapezoid = (x, y, width, height, offset, direction) => {
     ctx.beginPath();
     if (direction === 'left') {
