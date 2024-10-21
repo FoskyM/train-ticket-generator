@@ -59,6 +59,16 @@ const destroyCanvas = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
+const getStationSpacing = (stationText) => {
+  if (stationText.length == 4) {
+    return -6;
+  } else if (stationText.length == 3) {
+    return 10;
+  } else {
+    return 65;
+  }
+}
+
 const drawTicket = () => {
   destroyCanvas();
   const canvas = ticketCanvas.value;
@@ -181,9 +191,8 @@ const drawTicketDetails = (canvas, ctx) => {
   ctx.font = '45px SimHei';
   const startStation = props.ticketInfo.startStation;
   const endStation = props.ticketInfo.endStation;
-  const stationSpacing = 10; // 设置字间隔
-  drawCustomText(ctx, startStation, 110, topOffset + 80, stationSpacing);
-  drawCustomText(ctx, endStation, canvasWidth / 2 + 120, topOffset + 80, stationSpacing);
+  drawCustomText(ctx, startStation, 110, topOffset + 80, getStationSpacing(startStation));
+  drawCustomText(ctx, endStation, canvasWidth / 2 + 120, topOffset + 80, getStationSpacing(endStation));
 
   ctx.font = '30px FangSong';
   let startStationPinyin = pinyin(startStation, { toneType: 'none' }).replace(/ /g, '');
