@@ -7,3 +7,27 @@ html, body, #app {
   background-color: #f7fafc;
   height: 100vh;
 }
+
+.tab {
+  @apply flex justify-center items-center flex-wrap;
+}
+
+.tab-item {
+  @apply cursor-pointer px-2 border border-gray-300 select-none;
+}
+
+.tab-item:first-child {
+  @apply rounded-tl-md rounded-bl-md;
+}
+
+.tab-item:last-child {
+  @apply rounded-tr-md rounded-br-md;
+}
+
+.tab-item:hover {
+  @apply bg-gray-100;
+}
+
+.tab-item.active {
+  @apply bg-gray-200;
+}

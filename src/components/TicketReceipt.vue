@@ -26,7 +26,7 @@ import { ref, onMounted, watch } from 'vue';
 import { pinyin } from 'pinyin-pro';
 import QRCode from 'qrcode';
 import { drawCustomText, getTextWidth, drawParagraph, drawTrapezoid, drawRoundRect } from '@/utils/canvas';
-import { maskedId } from '@/utils/common';
+import { maskedId, getStationSpacing } from '@/utils/common';
 import CRHImage from '@/assets/img/CRH.jpg';
 
 const props = defineProps({
@@ -58,16 +58,6 @@ const destroyCanvas = () => {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
-
-const getStationSpacing = (stationText) => {
-  if (stationText.length == 4) {
-    return -6;
-  } else if (stationText.length == 3) {
-    return 10;
-  } else {
-    return 65;
-  }
-}
 
 const drawTicket = () => {
   destroyCanvas();
@@ -403,23 +393,5 @@ watch(() => props.ticketInfo, () => {
 <style scoped>
 .ticket-container {
   @apply flex justify-center items-center p-4;
-}
-.tab {
-  @apply flex justify-center items-center;
-}
-.tab-item {
-  @apply cursor-pointer px-2 border border-gray-300 select-none;
-}
-.tab-item:first-child {
-  @apply rounded-tl-md rounded-bl-md;
-}
-.tab-item:last-child {
-  @apply rounded-tr-md rounded-br-md;
-}
-.tab-item:hover {
-  @apply bg-gray-100;
-}
-.tab-item.active {
-  @apply bg-gray-200;
 }
 </style>

@@ -1,6 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import TicketCanvas from '@/components/TicketCanvas.vue';
+import TicketReceipt from '@/components/TicketReceipt.vue';
+
+const tabs = ref([
+  { label: '蓝票(报销凭证)', key: 'receipt' },
+  { label: '蓝票(5代磁介质实名车票)', key: 'ticket5g' },
+  { label: '蓝票(4代磁介质非实名车票)', key: 'ticket4g'},
+  { label: '红票(3代软质车票)', key: 'ticket3g'},
+  { label: '红票(2代软质一维码车票)', key: 'ticket2g'},
+  { label: '纸板票(1代纸板火车票)', key: 'ticket1g'}
+]);
+
+const activeTab = ref('receipt');
 
 type TicketData = {
   id: string; // 火车票 ID
@@ -192,10 +203,23 @@ watch(() => ticketInfo.value.isStudent, (value) => {
 
       <div class="py-2"></div>
 
-      <div class="border-t-2 border-gray">
+      <div>
+        <div class="tab text-sm">
+          <div class="tab-item" v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key" :class="{ active: activeTab === tab.key }">{{ tab.label }}</div>
+        </div>
+      </div>
+
+      <div class="py-2"></div>
+
+      <div>
         <div class="ticket-container py-4">
-          
-          <TicketCanvas :ticketInfo="ticketInfo" />
+          <TicketReceipt :ticketInfo="ticketInfo" v-if="activeTab == 'receipt'"/>
+
+          <template v-else>
+            <h2 class="text-2xl">
+              其它车票仍在开发中，敬请期待！
+            </h2>
+          </template>
         </div>
       </div>
     </div>
