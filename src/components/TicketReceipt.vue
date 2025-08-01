@@ -273,8 +273,8 @@ const drawTicketDetails = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContex
   drawCustomText(ctx, props.ticketInfo.time, leftOffset + 248, topOffset + 170, -2)
 
   // 座位号、车厢号、座位类型
-  const seatCarriage = props.ticketInfo.seatCarriage.padStart(2, '0')
-  let seatNumber = props.ticketInfo.seatNumber.padStart(3, '0')
+  const seatCarriage = props.ticketInfo.seatCarriage.toString().padStart(2, '0')
+  let seatNumber = props.ticketInfo.seatNumber.toString().padStart(3, '0')
   drawCustomText(ctx, seatCarriage, canvasWidth / 2 + 120, topOffset + 170, -2)
   // 如果最后一位是字母，进行处理
   if (isNaN(parseInt(seatNumber.slice(-1)))) {
