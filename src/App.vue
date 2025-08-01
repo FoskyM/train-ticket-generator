@@ -2,6 +2,9 @@
 import { ref, watch } from 'vue'
 import TicketReceipt from '@/components/TicketReceipt.vue'
 import type { FieldInfoData, TicketData } from './types'
+import DynamicForm from './components/DynamicForm.vue'
+import Tabs from './components/Tabs.vue'
+import InfoHead from './components/InfoHead.vue'
 
 const tabs = ref([
   { label: '蓝票(报销凭证)', key: 'receipt' },
@@ -83,88 +86,6 @@ const ticketInfo = ref<TicketData>({
   isDiscount: true,
 })
 
-let isComposing = false
-
-const validateChineseInput = (event: Event) => {
-  if (isComposing) return
-  const input = event.target as HTMLInputElement
-  const chineseRegex = /^[\u4e00-\u9fa5]*$/
-  if (!chineseRegex.test(input.value)) {
-    input.value = input.value.replace(/[^\u4e00-\u9fa5]/g, '')
-  }
-}
-
-const handleCompositionStart = () => {
-  isComposing = true
-}
-
-const handleCompositionEnd = (event: Event) => {
-  isComposing = false
-  validateChineseInput(event)
-}
-
-const validateEnglishAndNumberInput = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const englishAndNumberRegex = /^[A-Za-z0-9]*$/
-  if (!englishAndNumberRegex.test(input.value)) {
-    input.value = input.value.replace(/[^A-Za-z0-9]/g, '')
-  }
-}
-
-const validateNumberInput = (event: Event, maxValue: number) => {
-  const input = event.target as HTMLInputElement
-  const numberRegex = /^[0-9]*$/
-  if (!numberRegex.test(input.value)) {
-    input.value = input.value.replace(/[^0-9]/g, '')
-  }
-  if (parseInt(input.value) > maxValue) {
-    input.value = maxValue.toString()
-  }
-}
-
-const generateFormFields = () => {
-  const fields: any = []
-  for (const key in ticketInfo.value) {
-    // const value = ticketInfo.value[key]
-    fields.push({
-      key,
-      label: fieldInfo.value[key].label,
-      type: fieldInfo.value[key].type,
-      colSpan: fieldInfo.value[key].colSpan,
-      disabled: false,
-    })
-  }
-  for (const field of fields) {
-    if (field.type === 'select') {
-      field.data = fieldInfo.value[field.key].data
-    } else if (field.type === 'float') {
-      field.type = 'number'
-      field.step = '0.01'
-    } else if (field.type === 'number') {
-      field.step = '1'
-    } else if (field.type === 'text') {
-      if (fieldInfo.value[field.key].maxLength) {
-        field.maxLength = fieldInfo.value[field.key].maxLength
-      }
-    }
-
-    if (fieldInfo.value[field.key].maxValue) {
-      field.max = fieldInfo.value[field.key].maxValue
-      field.onInput = (event: Event) =>
-        validateNumberInput(event, fieldInfo.value[field.key].maxValue as number)
-    }
-
-    if (fieldInfo.value[field.key].onlyChinese) {
-      field.onInput = validateChineseInput
-    } else if (fieldInfo.value[field.key].onlyEnglishAndNumber) {
-      field.onInput = validateEnglishAndNumberInput
-    }
-  }
-  return fields
-}
-
-const formFields = generateFormFields()
-
 watch(
   () => ticketInfo.value.isStudent,
   (value) => {
@@ -182,113 +103,11 @@ watch(
 <template>
   <div class="container px-5 py-24 mx-auto my-auto h-full">
     <div class="items-center justify-between p-4 rounded-lg bg-white shadow-indigo-50 shadow-md">
-      <div class="header mb-4">
-        <h2 class="text-2xl font-bold">火车票生成器</h2>
-        <p class="text-sm text-gray-500">
-          本项目仅供学习交流使用，转载请注明出处，不得用于商业或违法用途。<br />
-          图标与车票版式版权归中国铁路及相关集团所有，本项目与其无任何关联。
-        </p>
-        <div class="text-sm text-gray-500">
-          <a
-            href="https://github.com/FoskyM/train-ticket-generator"
-            target="_blank"
-            class="text-indigo-500 underline"
-            >train-ticket-generator</a
-          >
-          © 2024 This project is licensed under AGPLv3. 2024-present copyright by
-          <a href="https://fosky.top" target="_blank" class="text-indigo-500 underline">FoskyM</a>.
-        </div>
-        <div class="github inline-flex pt-2 gap-1">
-          <img
-            src="https://img.shields.io/github/stars/FoskyM/train-ticket-generator.svg"
-            alt="Stars"
-          />
-          <img
-            src="https://img.shields.io/github/forks/FoskyM/train-ticket-generator.svg"
-            alt="Forks"
-          />
-          <img
-            src="https://img.shields.io/github/issues/FoskyM/train-ticket-generator.svg"
-            alt="Issues"
-          />
-        </div>
-      </div>
+      <InfoHead />
 
-      <div>
-        <form>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div
-              v-for="field in formFields"
-              :key="field.key"
-              :class="`col-span-${field.colSpan}`"
-              class="space-y-2"
-            >
-              <label :for="field.key" class="block text-sm font-medium text-gray-700">{{
-                field.label
-              }}</label>
-              <template v-if="field.type === 'select'">
-                <select
-                  v-model="ticketInfo[field.key]"
-                  :id="field.key"
-                  :disabled="field.disabled"
-                  class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option v-for="item in field.data" :key="item" :value="item">
-                    {{ item }}
-                  </option>
-                </select>
-              </template>
-              <template v-else-if="field.type === 'checkbox'">
-                <div class="flex items-center">
-                  <input
-                    :type="field.type"
-                    :id="field.key"
-                    :disabled="fieldInfo[field.key].disabled"
-                    v-model="ticketInfo[field.key]"
-                    class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                  />
-                  <label :for="field.key" class="ml-2 block text-sm text-gray-900 select-none">{{
-                    field.label
-                  }}</label>
-                </div>
-              </template>
-              <template v-else>
-                <input
-                  :type="field.type"
-                  :step="field.step || null"
-                  :maxlength="field.maxLength || null"
-                  :max="field.max || null"
-                  :id="field.key"
-                  :disabled="field.disabled"
-                  @input="field.onInput ? field.onInput($event) : null"
-                  @compositionstart="handleCompositionStart"
-                  @compositionend="handleCompositionEnd"
-                  v-model="ticketInfo[field.key]"
-                  class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </template>
-            </div>
-          </div>
-        </form>
-      </div>
+      <DynamicForm class="mb-4" v-model="ticketInfo" v-model:fields="fieldInfo" />
 
-      <div class="py-2"></div>
-
-      <div>
-        <div class="tab text-sm">
-          <div
-            class="tab-item"
-            v-for="tab in tabs"
-            :key="tab.key"
-            @click="activeTab = tab.key"
-            :class="{ active: activeTab === tab.key }"
-          >
-            {{ tab.label }}
-          </div>
-        </div>
-      </div>
-
-      <div class="py-2"></div>
+      <Tabs class="mb-4" v-model="activeTab" :tabs="tabs" />
 
       <div>
         <div class="ticket-container py-4">
