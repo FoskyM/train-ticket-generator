@@ -1,15 +1,5 @@
 <template>
-  <div class="tab">
-    <div
-      class="tab-item"
-      v-for="tab in tabs"
-      :key="tab.key"
-      @click="activeTab = tab.key"
-      :class="{ active: activeTab === tab.key }"
-    >
-      {{ tab.label }}
-    </div>
-  </div>
+  <Tabs v-model="activeTab" :tabs="tabs" />
 
   <div v-show="activeTab == 'ticket2D'">
     <div class="ticket-container">
@@ -40,6 +30,7 @@ import {
 } from '@/utils/canvas'
 import { maskedId, getStationSpacing } from '@/utils/common'
 import CRHImage from '@/assets/img/CRH.jpg'
+import Tabs from '@/components/common/Tabs.vue'
 
 const props = defineProps({
   ticketInfo: {

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+
+import type { FieldInfoData, TicketData } from '@/types'
+
+import DynamicForm from '@/components/common/DynamicForm.vue'
+import Tabs from '@/components/common/Tabs.vue'
+import InfoHead from '@/components/common/InfoHead.vue'
+
 import TicketReceipt from '@/components/TicketReceipt.vue'
-import type { FieldInfoData, TicketData } from './types'
-import DynamicForm from './components/DynamicForm.vue'
-import Tabs from './components/Tabs.vue'
-import InfoHead from './components/InfoHead.vue'
 
 const tabs = ref([
   { label: '蓝票(报销凭证)', key: 'receipt' },
@@ -107,7 +110,7 @@ watch(
 
       <DynamicForm class="mb-4" v-model="ticketInfo" v-model:fields="fieldInfo" />
 
-      <Tabs class="mb-4" v-model="activeTab" :tabs="tabs" />
+      <Tabs class="mb-4 text-sm" v-model="activeTab" :tabs="tabs" />
 
       <div>
         <div class="ticket-container py-4">

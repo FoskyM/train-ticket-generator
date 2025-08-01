@@ -1,5 +1,5 @@
 <template>
-  <div class="tab text-sm" v-bind="$attrs">
+  <div class="tab" v-bind="$attrs">
     <div
       class="tab-item"
       v-for="tab in tabs"
