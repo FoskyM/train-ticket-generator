@@ -104,7 +104,7 @@ watch(
 </script>
 
 <template>
-  <div class="container px-5 py-24 mx-auto my-auto h-full">
+  <div class="container px-5 py-5 md:py-16 xl:py-24 mx-auto my-auto h-fit">
     <div class="items-center justify-between p-4 rounded-lg bg-white shadow-indigo-50 shadow-md">
       <InfoHead />
 

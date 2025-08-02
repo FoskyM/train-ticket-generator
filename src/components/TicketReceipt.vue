@@ -1,12 +1,20 @@
 <template>
   <Tabs v-model="activeTab" :tabs="tabs" />
 
-  <div v-show="activeTab == 'ticket2D'">
+  <div
+    v-show="activeTab == 'ticket2D'"
+    class="flex flex-col md:flex-row gap-4 justify-between w-full py-4"
+    :style="{ minHeight: canvasHeight }"
+  >
     <div class="ticket-container">
-      <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+      <div class="canvas-aspect">
+        <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+      </div>
     </div>
     <div class="ticket-container">
-      <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+      <div class="canvas-aspect">
+        <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+      </div>
     </div>
   </div>
   <div v-show="activeTab == 'ticket3D'">
@@ -461,6 +469,19 @@ watch(
 
 <style scoped>
 .ticket-container {
-  @apply flex justify-center items-center p-4;
+  @apply flex justify-center items-center w-full;
+}
+.canvas-aspect {
+  width: 100%;
+  aspect-ratio: 876 / 539;
+  position: relative;
+}
+.canvas-aspect canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 </style>
