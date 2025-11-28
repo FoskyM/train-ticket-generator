@@ -14,7 +14,7 @@ import Tabs from '@/components/common/Tabs.vue'
 import InfoHead from '@/components/common/InfoHead.vue'
 import StyleConfigForm from '@/components/common/StyleConfigForm.vue'
 
-import TicketReceipt from '@/components/TicketReceipt.vue'
+import TicketReceipt from '@/components/ticket-receipt/index.vue'
 
 // 票据组件映射
 const ticketComponents: Record<string, Component> = {
