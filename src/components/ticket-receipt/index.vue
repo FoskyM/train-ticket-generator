@@ -1,3 +1,24 @@
+<!-- *
+ * Train Ticket Generator 中国铁路火车票生成器.
+ * Copyright (C) 2024-present FoskyM<i@fosky.top>
+ * https://github.com/FoskyM/train-ticket-generator
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file is created by FoskyM on 2024/10/20 & renamed on 2025/11/28.
+ * -->
+
 <template>
   <Tabs v-model="activeTab" :tabs="tabs" />
 
@@ -55,7 +76,9 @@
         >
           -
         </button>
-        <span class="text-sm text-gray-600 w-12 text-center">{{ (config3D.zoom * 100).toFixed(0) }}%</span>
+        <span class="text-sm text-gray-600 w-12 text-center"
+          >{{ (config3D.zoom * 100).toFixed(0) }}%</span
+        >
         <button
           @click="zoomIn"
           :disabled="config3D.zoom >= ZOOM_MAX"
@@ -303,13 +326,7 @@ const init3DScene = () => {
 
   if (success) {
     // 绑定事件
-    cleanupEvents = bindEvents(
-      threeContainer.value,
-      state3D,
-      config3D,
-      updateConfig,
-      setAutoRotate,
-    )
+    cleanupEvents = bindEvents(threeContainer.value, state3D, config3D, updateConfig, setAutoRotate)
     // 开始动画
     animate(state3D, config3D)
   }

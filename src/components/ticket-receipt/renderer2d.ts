@@ -1,3 +1,24 @@
+/*
+ * Train Ticket Generator 中国铁路火车票生成器.
+ * Copyright (C) 2024-present FoskyM<i@fosky.top>
+ * https://github.com/FoskyM/train-ticket-generator
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * This file is created by FoskyM on 2025/11/28.
+ */
+
 import { pinyin } from 'pinyin-pro'
 import QRCode from 'qrcode'
 import type { TicketStyleConfig } from '@/types'
@@ -76,25 +97,53 @@ export const drawTicketDetails = (
 
   // 斜线纹理 - 使用优化后的裁剪方案，确保不超出圆角边界且覆盖梯形
   const trapezoids: TrapezoidConfig[] = [
-    { x: 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
-    { x: canvasWidth - 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
-    { x: 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
-    { x: canvasWidth - 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
+    {
+      x: 10,
+      y: canvasHeight * 0.2,
+      width: protrusionWidth,
+      height: protrusionHeight,
+      offset: 5,
+      direction: 'left',
+    },
+    {
+      x: canvasWidth - 10,
+      y: canvasHeight * 0.2,
+      width: protrusionWidth,
+      height: protrusionHeight,
+      offset: 5,
+      direction: 'right',
+    },
+    {
+      x: 10,
+      y: canvasHeight * 0.8,
+      width: protrusionWidth,
+      height: protrusionHeight,
+      offset: 5,
+      direction: 'left',
+    },
+    {
+      x: canvasWidth - 10,
+      y: canvasHeight * 0.8,
+      width: protrusionWidth,
+      height: protrusionHeight,
+      offset: 5,
+      direction: 'right',
+    },
   ]
 
   drawDiagonalPattern(
     ctx,
     canvasWidth,
     canvasHeight,
-    20,           // rectX
-    10,           // rectY
-    canvasWidth - 40,  // rectWidth
+    20, // rectX
+    10, // rectY
+    canvasWidth - 40, // rectWidth
     canvasHeight - 20, // rectHeight
-    20,           // radius
+    20, // radius
     trapezoids,
     'rgba(173, 216, 230, .5)', // strokeStyle
-    1,            // lineWidth
-    5,            // spacing
+    1, // lineWidth
+    5, // spacing
   )
 
   // 下方略深的蓝色区域
@@ -154,12 +203,7 @@ export const drawTicketDetails = (
   const endStationPinyinWidth = getTextWidth(ctx, endStationPinyin)
 
   drawText(startStationPinyin, 200 - startStationPinyinWidth / 2, topOffset + 115, -1)
-  drawText(
-    endStationPinyin,
-    canvasWidth / 2 + 220 - endStationPinyinWidth / 2,
-    topOffset + 115,
-    -1,
-  )
+  drawText(endStationPinyin, canvasWidth / 2 + 220 - endStationPinyinWidth / 2, topOffset + 115, -1)
 
   ctx.font = buildFontString(fonts.trainNumber.family, fonts.trainNumber.size)
   const trainNumber = ticketInfo.trainNumber
@@ -209,10 +253,7 @@ export const drawTicketDetails = (
   }
 
   ctx.font = buildFontString(fonts.seatInfo.family, fonts.seatInfo.size)
-  const seatType =
-    ticketInfo.seatTypeCustom == ''
-      ? ticketInfo.seatType
-      : ticketInfo.seatTypeCustom
+  const seatType = ticketInfo.seatTypeCustom == '' ? ticketInfo.seatType : ticketInfo.seatTypeCustom
   const seatTypeWidth = getTextWidth(ctx, seatType)
   drawText(seatType, 650 - seatTypeWidth / 2, topOffset + 210)
 
@@ -304,11 +345,21 @@ export const drawTicketDetails = (
     qrImage.src = url
     qrImage.onload = () => {
       // 二维码磨损效果减轻为原强度的 30%
-      const qrWearEffect = wearEffect ? {
-        ...wearEffect,
-        intensity: wearEffect.intensity * 0.3,
-      } : undefined
-      drawImageWithWear(ctx, qrImage, dashLeft + dashWidth + 60, 330, qrCodeWidth, qrCodeWidth, qrWearEffect)
+      const qrWearEffect = wearEffect
+        ? {
+            ...wearEffect,
+            intensity: wearEffect.intensity * 0.3,
+          }
+        : undefined
+      drawImageWithWear(
+        ctx,
+        qrImage,
+        dashLeft + dashWidth + 60,
+        330,
+        qrCodeWidth,
+        qrCodeWidth,
+        qrWearEffect,
+      )
     }
   })
 
@@ -358,10 +409,7 @@ export const drawTicket = (
 /**
  * 绘制车票背面（2D 显示用，带白色背景）
  */
-export const drawTicketBack = (
-  canvas: HTMLCanvasElement,
-  styleConfig: TicketStyleConfig,
-) => {
+export const drawTicketBack = (canvas: HTMLCanvasElement, styleConfig: TicketStyleConfig) => {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
   const fonts = styleConfig.fonts
   const wearEffect = styleConfig.wearEffect

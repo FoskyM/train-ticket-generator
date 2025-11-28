@@ -1,0 +1,44 @@
+{
+  "project": {
+    "name": "Train Ticket Generator",
+    "description": "仅供学习交流使用，不得用于商业或违法用途",
+    "author": "FoskyM",
+    "authorUrl": "https://fosky.top",
+    "license": "AGPL-3.0",
+    "repository": "https://github.com/FoskyM/train-ticket-generator",
+    "homepage": "https://image.fosky.top/projects/ticket"
+  },
+  "changelog": [
+    {
+      "version": "0.2.0",
+      "date": "2025-11-28",
+      "changes": [
+        "新增磨损效果",
+        "新增本地字体加载",
+        "新增样式配置功能",
+        "优化 Canvas 绘制性能",
+        "新增蓝票(报销凭证) 3D 预览功能",
+        "新增缩放和旋转速度控制",
+        "组件拆分优化代码结构",
+        "添加重绘防抖优化性能",
+        "版权信息与更新记录",
+        "优化 UI"
+      ]
+    },
+    {
+      "version": "0.1.1",
+      "date": "2025-08-02",
+      "changes": ["换用 PNPM", "拆分与优化代码", "优化 UI"]
+    },
+    {
+      "version": "0.1.0",
+      "date": "2024-10-21",
+      "changes": ["第一个可用版本", "蓝票(报销凭证) 2D 实现", "在抖音、小红书等自媒体平台发布"]
+    },
+    {
+      "version": "0.0.0",
+      "date": "2024-10-20",
+      "changes": ["项目初始化"]
+    }
+  ]
+}

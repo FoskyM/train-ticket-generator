@@ -13,6 +13,7 @@ import DynamicForm from '@/components/common/DynamicForm.vue'
 import Tabs from '@/components/common/Tabs.vue'
 import InfoHead from '@/components/common/InfoHead.vue'
 import StyleConfigForm from '@/components/common/StyleConfigForm.vue'
+import AppFooter from '@/components/common/AppFooter.vue'
 
 import TicketReceipt from '@/components/ticket-receipt/index.vue'
 
@@ -181,6 +182,8 @@ watch(
         </template>
       </div>
     </div>
+
+    <AppFooter />
   </div>
 </template>
 

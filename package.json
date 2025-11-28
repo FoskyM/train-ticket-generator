@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "license": "AGPL-3.0",
+  "author": "FoskyM",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FoskyM/train-ticket-generator"
+  },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
