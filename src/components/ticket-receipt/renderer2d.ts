@@ -8,6 +8,7 @@ import {
   drawTrapezoid,
   drawRoundRect,
   drawDiagonalPattern,
+  drawImageWithWear,
   type TrapezoidConfig,
 } from '@/utils/canvas'
 import { buildFontString } from '@/utils/font'
@@ -302,7 +303,12 @@ export const drawTicketDetails = (
     const qrImage = new Image()
     qrImage.src = url
     qrImage.onload = () => {
-      ctx.drawImage(qrImage, dashLeft + dashWidth + 60, 330, qrCodeWidth, qrCodeWidth)
+      // 二维码磨损效果减轻为原强度的 30%
+      const qrWearEffect = wearEffect ? {
+        ...wearEffect,
+        intensity: wearEffect.intensity * 0.3,
+      } : undefined
+      drawImageWithWear(ctx, qrImage, dashLeft + dashWidth + 60, 330, qrCodeWidth, qrCodeWidth, qrWearEffect)
     }
   })
 

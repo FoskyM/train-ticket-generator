@@ -323,9 +323,57 @@ const drawDiagonalPattern = (
   ctx.restore()
 }
 
+/**
+ * 绘制带磨损效果的图像
+ * @param ctx Canvas 上下文
+ * @param image 要绘制的图像
+ * @param x 目标 x 坐标
+ * @param y 目标 y 坐标
+ * @param width 目标宽度
+ * @param height 目标高度
+ * @param wearEffect 磨损效果配置
+ */
+const drawImageWithWear = (
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement | HTMLCanvasElement,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  wearEffect?: WearEffectConfig,
+) => {
+  // 如果没有启用磨损效果，直接绘制
+  if (!wearEffect?.enabled || wearEffect.intensity <= 0) {
+    ctx.drawImage(image, x, y, width, height)
+    return
+  }
+
+  // 创建离屏 Canvas
+  const offscreenCanvas = document.createElement('canvas')
+  offscreenCanvas.width = width
+  offscreenCanvas.height = height
+  const offCtx = offscreenCanvas.getContext('2d')!
+
+  // 在离屏 Canvas 上绘制图像
+  offCtx.drawImage(image, 0, 0, width, height)
+
+  // 应用磨损效果
+  const cacheKey = `wear_img_${width}_${height}_${wearEffect.intensity.toFixed(2)}`
+  const wearTexture = createWearTexture(width, height, cacheKey, wearEffect.intensity)
+
+  // 使用 destination-in 混合模式应用磨损
+  offCtx.globalCompositeOperation = 'destination-in'
+  offCtx.drawImage(wearTexture, 0, 0, width, height)
+  offCtx.globalCompositeOperation = 'source-over'
+
+  // 绘制到主 Canvas
+  ctx.drawImage(offscreenCanvas, x, y)
+}
+
 export {
   drawCustomText,
   drawParagraph,
+  drawImageWithWear,
   getTextWidth,
   drawTrapezoid,
   drawRoundRect,
