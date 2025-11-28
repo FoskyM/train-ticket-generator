@@ -51,6 +51,7 @@ export const drawTicketDetails = (
   ctx: CanvasRenderingContext2D,
   ticketInfo: Record<string, any>,
   styleConfig: TicketStyleConfig,
+  callback?: () => void,
 ) => {
   const fonts = styleConfig.fonts
   const wearEffect = styleConfig.wearEffect
@@ -360,6 +361,8 @@ export const drawTicketDetails = (
         qrCodeWidth,
         qrWearEffect,
       )
+      // 二维码加载完成后调用回调
+      callback?.()
     }
   })
 
@@ -486,8 +489,8 @@ export const drawTicket3D = (
     ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight)
     ctx.globalAlpha = 1.0
 
-    drawTicketDetails(canvas, ctx, ticketInfo, styleConfig)
-    callback?.()
+    // 将 callback 传递给 drawTicketDetails，等待二维码加载完成后调用
+    drawTicketDetails(canvas, ctx, ticketInfo, styleConfig, callback)
   }
 }
 
