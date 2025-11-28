@@ -1,13 +1,28 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed, type Component } from 'vue'
 
-import type { FieldInfoData, TicketData } from '@/types'
+import type {
+  FieldInfoData,
+  TicketData,
+  TicketStyleConfig,
+  StyleFieldGroup,
+  TicketComponentExpose,
+} from '@/types'
 
 import DynamicForm from '@/components/common/DynamicForm.vue'
 import Tabs from '@/components/common/Tabs.vue'
 import InfoHead from '@/components/common/InfoHead.vue'
+import StyleConfigForm from '@/components/common/StyleConfigForm.vue'
 
 import TicketReceipt from '@/components/TicketReceipt.vue'
+
+// 票据组件映射
+const ticketComponents: Record<string, Component> = {
+  receipt: TicketReceipt,
+  // ticket5g: Ticket5G,
+  // ticket4g: Ticket4G,
+  // ...
+}
 
 const tabs = ref([
   { label: '蓝票(报销凭证)', key: 'receipt' },
@@ -19,6 +34,33 @@ const tabs = ref([
 ])
 
 const activeTab = ref('')
+
+// 当前票据组件
+const currentComponent = computed(() => ticketComponents[activeTab.value] || null)
+
+// 票据组件引用
+const ticketRef = ref<TicketComponentExpose | null>(null)
+
+// 样式配置（单一对象，切换时更新）
+const styleConfig = ref<TicketStyleConfig | null>(null)
+const defaultStyleConfig = ref<TicketStyleConfig | null>(null)
+const styleFieldGroups = ref<StyleFieldGroup[]>([])
+
+// 组件挂载时初始化配置
+const onTicketMounted = () => {
+  if (ticketRef.value) {
+    defaultStyleConfig.value = ticketRef.value.defaultStyleConfig
+    styleFieldGroups.value = ticketRef.value.styleFieldGroups
+    styleConfig.value = JSON.parse(JSON.stringify(defaultStyleConfig.value))
+  }
+}
+
+// 切换 tab 时重置配置
+watch(activeTab, () => {
+  styleConfig.value = null
+  defaultStyleConfig.value = null
+  styleFieldGroups.value = []
+})
 
 const seatTypeList = ref(['商务座', '一等座', '二等座', '无座', '硬座', '硬卧', '软卧'])
 
@@ -112,16 +154,31 @@ watch(
 
       <Tabs class="mb-4 text-sm" v-model="activeTab" :tabs="tabs" />
 
-      <div>
-        <div class="ticket-container py-4">
-          <TicketReceipt :ticketInfo="ticketInfo" v-if="activeTab == 'receipt'" />
-          <template v-else-if="activeTab == ''">
-            <h2 class="text-2xl">请选择车票类型</h2>
-          </template>
-          <template v-else>
-            <h2 class="text-2xl">其它车票仍在开发中，敬请期待！</h2>
-          </template>
-        </div>
+      <!-- 样式配置表单 -->
+      <StyleConfigForm
+        v-if="styleConfig && defaultStyleConfig"
+        v-model="styleConfig"
+        :defaultConfig="defaultStyleConfig"
+        :fieldGroups="styleFieldGroups"
+        class="mb-4"
+      />
+
+      <div class="ticket-container py-4">
+        <!-- 动态票据组件 -->
+        <component
+          v-if="currentComponent"
+          :is="currentComponent"
+          ref="ticketRef"
+          :ticketInfo="ticketInfo"
+          :styleConfig="styleConfig ?? undefined"
+          @vue:mounted="onTicketMounted"
+        />
+        <template v-else-if="activeTab === ''">
+          <h2 class="text-2xl">请选择车票类型</h2>
+        </template>
+        <template v-else>
+          <h2 class="text-2xl">其它车票仍在开发中，敬请期待！</h2>
+        </template>
       </div>
     </div>
   </div>

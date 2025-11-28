@@ -27,6 +27,75 @@ export type TicketData = {
   [key: string]: any
 }
 
+/**
+ * 字体配置
+ */
+export type FontConfig = {
+  family: string // 字体族
+  size: number // 字号(px)
+  weight?: string | number // 字重
+}
+
+/**
+ * 磨损效果配置
+ */
+export type WearEffectConfig = {
+  enabled: boolean // 是否启用磨损效果
+  intensity: number // 磨损强度 0-1
+}
+
+/**
+ * 票据样式配置 - 用于各种票据组件导出
+ */
+export type TicketStyleConfig = {
+  // 字体配置
+  fonts: {
+    station: FontConfig // 站名
+    stationPinyin: FontConfig // 站名拼音
+    trainNumber: FontConfig // 车次
+    date: FontConfig // 日期时间
+    seatInfo: FontConfig // 座位信息
+    price: FontConfig // 价格
+    passenger: FontConfig // 乘客信息
+    label: FontConfig // 标签文字（年月日开车号等）
+    notice: FontConfig // 报销提示
+    ticketId: FontConfig // 票据ID
+    redId: FontConfig // 红色ID
+    checkGate: FontConfig // 检票口
+    backTitle: FontConfig // 背面标题
+    backContent: FontConfig // 背面内容
+    [key: string]: FontConfig // 索引签名，允许字符串索引
+  }
+  // 磨损效果配置
+  wearEffect: WearEffectConfig
+  [key: string]: any
+}
+
+/**
+ * 样式配置字段定义 - 用于动态表单渲染
+ */
+export type StyleFieldInfo = {
+  label: string
+  key: string
+  sizeMin: number
+  sizeMax: number
+}
+
+/**
+ * 样式字段分组 - 用于表单分组显示
+ */
+export type StyleFieldGroup = {
+  fields: StyleFieldInfo[]
+}
+
+/**
+ * 票据组件暴露的配置接口
+ */
+export interface TicketComponentExpose {
+  defaultStyleConfig: TicketStyleConfig
+  styleFieldGroups: StyleFieldGroup[]
+}
+
 export type FieldInfoColumn = {
   label: string
   colSpan: number

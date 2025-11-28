@@ -1,11 +1,19 @@
+import type { WearEffectConfig } from '@/types'
+
 // 磨损纹理缓存，避免重复生成
 const wearTextureCache = new Map<string, HTMLCanvasElement>()
 
 /**
  * 生成磨损纹理蒙版
  * 使用离屏Canvas预生成，大幅提升性能
+ * @param intensity 磨损强度 0-1，值越大磨损越明显
  */
-const createWearTexture = (width: number, height: number, cacheKey: string): HTMLCanvasElement => {
+const createWearTexture = (
+  width: number,
+  height: number,
+  cacheKey: string,
+  intensity: number = 0.7,
+): HTMLCanvasElement => {
   // 检查缓存
   const cached = wearTextureCache.get(cacheKey)
   if (cached && cached.width >= width && cached.height >= height) {
@@ -21,9 +29,15 @@ const createWearTexture = (width: number, height: number, cacheKey: string): HTM
   const imageData = textureCtx.createImageData(textureCanvas.width, textureCanvas.height)
   const data = imageData.data
 
+  // 根据强度计算透明度范围
+  // intensity=0 时，alpha 范围为 1-1（无磨损）
+  // intensity=1 时，alpha 范围为 0.3-1（最大磨损）
+  const minAlpha = 1 - intensity * 0.7
+  const alphaRange = 1 - minAlpha
+
   // 生成随机透明度纹理
   for (let i = 0; i < data.length; i += 4) {
-    const alpha = Math.floor((Math.random() * 0.7 + 0.3) * 255)
+    const alpha = Math.floor((Math.random() * alphaRange + minAlpha) * 255)
     data[i] = 255 // R
     data[i + 1] = 255 // G
     data[i + 2] = 255 // B
@@ -39,6 +53,13 @@ const createWearTexture = (width: number, height: number, cacheKey: string): HTM
 }
 
 /**
+ * 清除磨损纹理缓存（当强度改变时需要重新生成）
+ */
+const clearWearTextureCache = () => {
+  wearTextureCache.clear()
+}
+
+/**
  * 优化后的磨损文字绘制
  * 使用离屏Canvas + globalCompositeOperation，性能提升约50-100倍
  */
@@ -49,6 +70,7 @@ const drawCustomText = (
   y: number,
   spacing: number = 0,
   color: number[] = [0, 0, 0],
+  wearEffect?: WearEffectConfig,
 ) => {
   if (!text) return
 
@@ -83,14 +105,16 @@ const drawCustomText = (
     offsetX += ctx.measureText(char).width + spacing
   }
 
-  // 获取磨损纹理
-  const cacheKey = `wear_${canvasWidth}_${canvasHeight}`
-  const wearTexture = createWearTexture(canvasWidth, canvasHeight, cacheKey)
+  // 应用磨损效果（如果启用）
+  if (wearEffect?.enabled && wearEffect.intensity > 0) {
+    const cacheKey = `wear_${canvasWidth}_${canvasHeight}_${wearEffect.intensity.toFixed(2)}`
+    const wearTexture = createWearTexture(canvasWidth, canvasHeight, cacheKey, wearEffect.intensity)
 
-  // 应用磨损效果：使用destination-in混合模式
-  offCtx.globalCompositeOperation = 'destination-in'
-  offCtx.drawImage(wearTexture, 0, 0, canvasWidth, canvasHeight)
-  offCtx.globalCompositeOperation = 'source-over'
+    // 应用磨损效果：使用destination-in混合模式
+    offCtx.globalCompositeOperation = 'destination-in'
+    offCtx.drawImage(wearTexture, 0, 0, canvasWidth, canvasHeight)
+    offCtx.globalCompositeOperation = 'source-over'
+  }
 
   // 绘制到主Canvas
   ctx.drawImage(offscreenCanvas, x - 5, y - fontSize - extraSpace)
@@ -106,6 +130,7 @@ const drawParagraph = (
   maxWidth: number,
   spacing: number = 0,
   color: number[] = [0, 0, 0],
+  wearEffect?: WearEffectConfig,
 ) => {
   paragraphs.forEach((paragraph) => {
     const words = paragraph.split('')
@@ -126,7 +151,7 @@ const drawParagraph = (
             textSpacing += 0.6
           }
         }
-        drawCustomText(ctx, line, x + (isFirstLine ? indent : 0), y, textSpacing, color)
+        drawCustomText(ctx, line, x + (isFirstLine ? indent : 0), y, textSpacing, color, wearEffect)
         line = words[n]
         y += lineSpace
         isFirstLine = false
@@ -134,7 +159,7 @@ const drawParagraph = (
         line = testLine
       }
     }
-    drawCustomText(ctx, line, x + (isFirstLine ? indent : 0), y, spacing, color)
+    drawCustomText(ctx, line, x + (isFirstLine ? indent : 0), y, spacing, color, wearEffect)
     y += lineSpace
   })
 }
@@ -305,5 +330,6 @@ export {
   drawTrapezoid,
   drawRoundRect,
   drawDiagonalPattern,
+  clearWearTextureCache,
   type TrapezoidConfig,
 }
