@@ -14,6 +14,7 @@ import Tabs from '@/components/common/Tabs.vue'
 import InfoHead from '@/components/common/InfoHead.vue'
 import StyleConfigForm from '@/components/common/StyleConfigForm.vue'
 import AppFooter from '@/components/common/AppFooter.vue'
+import DonateButton from '@/components/common/DonateButton.vue'
 
 import TicketReceipt from '@/components/ticket-receipt/index.vue'
 
@@ -184,6 +185,9 @@ watch(
     </div>
 
     <AppFooter />
+
+    <!-- 赞赏按钮 -->
+    <DonateButton />
   </div>
 </template>
 
