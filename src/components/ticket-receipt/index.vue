@@ -27,14 +27,20 @@
     class="flex flex-col md:flex-row gap-4 justify-between w-full py-4"
     :style="{ minHeight: canvasHeight + 'px' }"
   >
-    <div class="ticket-container">
+    <div class="ticket-container" @click="openFullscreen('front')">
       <div class="canvas-aspect">
         <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+        <div class="fullscreen-hint">
+          <span>点击全屏查看</span>
+        </div>
       </div>
     </div>
-    <div class="ticket-container">
+    <div class="ticket-container" @click="openFullscreen('back')">
       <div class="canvas-aspect">
         <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+        <div class="fullscreen-hint">
+          <span>点击全屏查看</span>
+        </div>
       </div>
     </div>
   </div>
@@ -95,6 +101,14 @@
       >
         重置视角
       </button>
+
+      <!-- 全屏按钮 -->
+      <button
+        @click="openFullscreen('3d')"
+        class="px-3 py-1 text-sm text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+      >
+        全屏
+      </button>
     </div>
 
     <!-- Three.js 渲染容器 -->
@@ -116,6 +130,34 @@
       class="hidden"
     ></canvas>
   </div>
+
+  <!-- 全屏弹窗 -->
+  <Teleport to="body">
+    <Transition name="fullscreen">
+      <div v-if="fullscreenMode" class="fullscreen-overlay" @click.self="closeFullscreen">
+        <div class="fullscreen-content">
+          <!-- 关闭按钮 -->
+          <button @click="closeFullscreen" class="fullscreen-close">&times;</button>
+
+          <!-- 2D 全屏内容 -->
+          <template v-if="fullscreenMode === 'front' || fullscreenMode === 'back'">
+            <div class="fullscreen-canvas-wrapper">
+              <canvas
+                ref="fullscreenCanvas"
+                :width="canvasWidth"
+                :height="canvasHeight"
+              ></canvas>
+            </div>
+          </template>
+
+          <!-- 3D 全屏内容 -->
+          <template v-if="fullscreenMode === '3d'">
+            <div ref="fullscreenThreeContainer" class="fullscreen-3d-container"></div>
+          </template>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -264,6 +306,13 @@ const ticketCanvas3D = ref<HTMLCanvasElement>()
 const ticketBackCanvas3D = ref<HTMLCanvasElement>()
 const threeContainer = ref<HTMLDivElement>()
 
+// 全屏相关
+const fullscreenMode = ref<'front' | 'back' | '3d' | null>(null)
+const fullscreenCanvas = ref<HTMLCanvasElement>()
+const fullscreenThreeContainer = ref<HTMLDivElement>()
+const fullscreenState3D = createInitialState()
+let fullscreenCleanupEvents: (() => void) | null = null
+
 // 3D 状态和配置
 const state3D = createInitialState()
 const config3D = reactive<Renderer3DConfig>({ ...defaultConfig })
@@ -307,6 +356,75 @@ const resetView = () => {
   resetRotation(state3D)
   config3D.zoom = 1
   updateCameraZoom(state3D, 1)
+}
+
+/**
+ * 打开全屏
+ */
+const openFullscreen = (mode: 'front' | 'back' | '3d') => {
+  fullscreenMode.value = mode
+
+  nextTick(() => {
+    if (mode === 'front' || mode === 'back') {
+      // 2D 全屏：复制 canvas 内容
+      if (fullscreenCanvas.value) {
+        const sourceCanvas = mode === 'front' ? ticketCanvas.value : ticketBackCanvas.value
+        if (sourceCanvas) {
+          const ctx = fullscreenCanvas.value.getContext('2d')
+          if (ctx) {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+            ctx.drawImage(sourceCanvas, 0, 0)
+          }
+        }
+      }
+    } else if (mode === '3d') {
+      // 3D 全屏：初始化新的 Three.js 场景
+      if (fullscreenThreeContainer.value && ticketCanvas3D.value && ticketBackCanvas3D.value) {
+        const success = initThreeJS(
+          fullscreenThreeContainer.value,
+          ticketCanvas3D.value,
+          ticketBackCanvas3D.value,
+          fullscreenState3D,
+          config3D,
+        )
+        if (success) {
+          fullscreenCleanupEvents = bindEvents(
+            fullscreenThreeContainer.value,
+            fullscreenState3D,
+            config3D,
+            updateConfig,
+            setAutoRotate,
+          )
+          animate(fullscreenState3D, config3D)
+        }
+      }
+    }
+  })
+
+  // 禁止背景滚动
+  document.body.style.overflow = 'hidden'
+}
+
+/**
+ * 关闭全屏
+ */
+const closeFullscreen = () => {
+  // 清理全屏 3D 资源
+  if (fullscreenMode.value === '3d') {
+    fullscreenCleanupEvents?.()
+    fullscreenCleanupEvents = null
+    disposeThreeJS(fullscreenThreeContainer.value ?? null, fullscreenState3D)
+  }
+
+  fullscreenMode.value = null
+  document.body.style.overflow = ''
+}
+
+// ESC 键关闭全屏
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && fullscreenMode.value) {
+    closeFullscreen()
+  }
 }
 
 /**
@@ -374,11 +492,19 @@ const redrawAll = () => {
 // 生命周期
 onMounted(() => {
   redrawAll()
+  window.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
   cleanupEvents?.()
   disposeThreeJS(threeContainer.value ?? null, state3D)
+  window.removeEventListener('keydown', handleKeydown)
+
+  // 清理全屏资源
+  if (fullscreenMode.value === '3d') {
+    fullscreenCleanupEvents?.()
+    disposeThreeJS(fullscreenThreeContainer.value ?? null, fullscreenState3D)
+  }
 })
 
 // 监听 tab 切换，在切换到 3D 时初始化 Three.js
@@ -406,13 +532,15 @@ watch(
 
 <style scoped>
 .ticket-container {
-  @apply flex justify-center items-center w-full;
+  @apply flex justify-center items-center w-full cursor-pointer;
 }
+
 .canvas-aspect {
   width: 100%;
   aspect-ratio: 876 / 539;
   position: relative;
 }
+
 .canvas-aspect canvas {
   width: 100%;
   height: 100%;
@@ -420,6 +548,17 @@ watch(
   position: absolute;
   left: 0;
   top: 0;
+}
+
+/* 全屏提示 */
+.fullscreen-hint {
+  @apply absolute inset-0 flex items-center justify-center;
+  @apply bg-black/0 text-white text-sm opacity-0 transition-all duration-200;
+  @apply pointer-events-none;
+}
+
+.canvas-aspect:hover .fullscreen-hint {
+  @apply bg-black/30 opacity-100;
 }
 
 /* 3D 样式 */
@@ -435,11 +574,80 @@ watch(
   touch-action: none;
 }
 
+/* 大屏适配 */
+@media (min-width: 1024px) {
+  .ticket-3d-container {
+    max-width: 800px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .ticket-3d-container {
+    max-width: 900px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .ticket-3d-container {
+    max-width: 1000px;
+  }
+}
+
 .ticket-3d-container:active {
   cursor: grabbing;
 }
 
 .ticket-3d-container canvas {
   display: block;
+}
+
+/* 全屏弹窗 */
+.fullscreen-overlay {
+  @apply fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4;
+}
+
+.fullscreen-content {
+  @apply relative w-full h-full flex items-center justify-center;
+}
+
+.fullscreen-close {
+  @apply absolute top-4 right-4 z-10;
+  @apply w-10 h-10 flex items-center justify-center;
+  @apply text-3xl text-white/70 hover:text-white transition-colors;
+  @apply bg-white/10 hover:bg-white/20 rounded-full;
+}
+
+.fullscreen-canvas-wrapper {
+  @apply flex items-center justify-center;
+  width: 100%;
+  height: 100%;
+}
+
+.fullscreen-canvas-wrapper canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.fullscreen-3d-container {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.fullscreen-3d-container:active {
+  cursor: grabbing;
+}
+
+/* 全屏动画 */
+.fullscreen-enter-active,
+.fullscreen-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fullscreen-enter-from,
+.fullscreen-leave-to {
+  opacity: 0;
 }
 </style>
