@@ -35,6 +35,8 @@ import {
   drawParagraph,
   drawTrapezoid,
   drawRoundRect,
+  drawDiagonalPattern,
+  type TrapezoidConfig,
 } from '@/utils/canvas'
 import { maskedId, getStationSpacing } from '@/utils/common'
 import CRHImage from '@/assets/img/CRH.jpg'
@@ -125,51 +127,28 @@ const drawTicketDetails = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContex
     'right',
   )
 
-  // 斜线纹理部分，需要改进，斜线不要超出圆角、梯形小块应有斜线
+  // 斜线纹理 - 使用优化后的裁剪方案，确保不超出圆角边界且覆盖梯形
+  const trapezoids: TrapezoidConfig[] = [
+    { x: 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
+    { x: canvasWidth - 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
+    { x: 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
+    { x: canvasWidth - 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
+  ]
 
-  // 设置线条样式
-  ctx.strokeStyle = 'rgba(173, 216, 230, .5)'
-  ctx.lineWidth = 1
-
-  const angle = -Math.PI / 6
-  const spacing = 5 // 斜线之间的间距
-  let bottomStartX = 0
-  for (let i = 20; i < canvas.width - 20; i += spacing) {
-    const startX = i
-    const startY = 10
-    let endX = startX + canvas.height * Math.tan(angle)
-    let endY = canvas.height - 10
-
-    if (endX < 20) {
-      endX = 20 + 1
-      endY = startY + (startX - 30) / Math.tan(-angle)
-    }
-    ctx.beginPath()
-    ctx.moveTo(startX, startY)
-    ctx.lineTo(endX, endY) // 终点计算
-    ctx.stroke()
-
-    bottomStartX = endX
-  }
-
-  for (let i = bottomStartX + 5; i < canvas.width - 20; i += spacing) {
-    const startX = i
-    const startY = canvas.height - 10
-    let endX = startX + canvas.height * Math.tan(-angle)
-    let endY = 10
-
-    if (endX > canvas.width - 20) {
-      endX = canvas.width - 20
-      endY = canvas.height - 10 - (canvas.width - 30 - startX) / Math.tan(-angle)
-    }
-
-    ctx.beginPath()
-    ctx.moveTo(startX, startY)
-    ctx.lineTo(endX, endY) // 终点计算
-    ctx.stroke()
-  }
-
-  ctx.strokeStyle = '#000'
+  drawDiagonalPattern(
+    ctx,
+    canvasWidth,
+    canvasHeight,
+    20,           // rectX
+    10,           // rectY
+    canvasWidth - 40,  // rectWidth
+    canvasHeight - 20, // rectHeight
+    20,           // radius
+    trapezoids,
+    'rgba(173, 216, 230, .5)', // strokeStyle
+    1,            // lineWidth
+    5,            // spacing
+  )
 
   // 下方略深的蓝色区域
   ctx.fillStyle = '#94cae0'
