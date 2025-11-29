@@ -22,24 +22,35 @@
 <template>
   <Tabs v-model="activeTab" :tabs="tabs" />
 
-  <div
-    v-show="activeTab == 'ticket2D'"
-    class="flex flex-col md:flex-row gap-4 justify-between w-full py-4"
-    :style="{ minHeight: canvasHeight + 'px' }"
-  >
-    <div class="ticket-container" @click="openFullscreen('front')">
-      <div class="canvas-aspect">
-        <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
-        <div class="fullscreen-hint">
-          <span>点击全屏查看</span>
+  <div v-show="activeTab == 'ticket2D'" class="ticket-2d-wrapper py-4">
+    <!-- 2D 控制栏 -->
+    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-4">
+      <button
+        @click="printTicket"
+        class="px-3 py-1 text-sm text-white bg-indigo-500 border border-indigo-500 rounded-md hover:bg-indigo-600 transition-colors"
+      >
+        打印（双面）
+      </button>
+    </div>
+
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between w-full"
+      :style="{ minHeight: canvasHeight + 'px' }"
+    >
+      <div class="ticket-container" @click="openFullscreen('front')">
+        <div class="canvas-aspect">
+          <canvas ref="ticketCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+          <div class="fullscreen-hint">
+            <span>点击全屏查看</span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="ticket-container" @click="openFullscreen('back')">
-      <div class="canvas-aspect">
-        <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
-        <div class="fullscreen-hint">
-          <span>点击全屏查看</span>
+      <div class="ticket-container" @click="openFullscreen('back')">
+        <div class="canvas-aspect">
+          <canvas ref="ticketBackCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+          <div class="fullscreen-hint">
+            <span>点击全屏查看</span>
+          </div>
         </div>
       </div>
     </div>
@@ -174,6 +185,9 @@ import {
   drawTicket3D,
   drawTicketBack3D,
 } from './renderer2d'
+
+// 打印工具
+import { printDuplex } from '@/utils/print'
 
 // 3D 渲染器
 import {
@@ -425,6 +439,14 @@ const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && fullscreenMode.value) {
     closeFullscreen()
   }
+}
+
+/**
+ * 打印车票（双面打印）
+ */
+const printTicket = () => {
+  if (!ticketCanvas.value || !ticketBackCanvas.value) return
+  printDuplex(ticketCanvas.value, ticketBackCanvas.value)
 }
 
 /**
