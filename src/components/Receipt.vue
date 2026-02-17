@@ -44,8 +44,8 @@ const activeTab = ref('ticket2D')
 
 const protrusionHeight = 40
 const protrusionWidth = 10
-const canvasWidth = 876
-const canvasHeight = 539
+const canvasWidth = 856
+const canvasHeight = 540
 const leftOffset = 80
 let topOffset = 40
 

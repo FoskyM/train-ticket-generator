@@ -44,8 +44,8 @@ const activeTab = ref('ticket2D')
 
 const protrusionHeight = 40
 const protrusionWidth = 10
-const canvasWidth = 876
-const canvasHeight = 539
+const canvasWidth = 856
+const canvasHeight = 540
 const leftOffset = 80
 let topOffset = 20
 
@@ -71,8 +71,8 @@ const drawTicket = () => {
   const backgroundImage = new Image()
   backgroundImage.src = CRHImage
   backgroundImage.onload = () => {
-    const paddingX = canvasWidth - 10
-    const paddingY = canvasHeight - 10
+    const paddingX = canvasWidth
+    const paddingY = canvasHeight
     const imgWidth = canvasWidth - 2 * paddingX
     const imgHeight = canvasHeight - 2 * paddingY
     const centerX = paddingX

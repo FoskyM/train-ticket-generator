@@ -121,11 +121,11 @@ watch(
           <Receipt :ticketInfo="ticketInfo" v-if="activeTab == 'receipt'" />
           <Receipt5g :ticketInfo="ticketInfo" v-if="activeTab == 'receipt5g'" />
           <Ticket :ticketInfo="ticketInfo" v-if="activeTab == 'ticket'" />
-          <template v-else-if="activeTab == ''">
-            <h2 class="text-2xl">请选择车票类型</h2>
+          <template v-if="activeTab == ''">
+            <h2 class="text-2xl">请选择车票类型！</h2>
           </template>
-          <template v-else-if="activeTab == 'ticket'">
-            <h2 class="text-2xl">正在开发中，敬请期待！</h2>
+          <template v-if="activeTab == 'receipt'||activeTab == 'receipt5g'||activeTab == 'ticket'">
+            <h2 class="text-2xl">修复bug中，敬请期待！</h2>
           </template>
         </div>
       </div> 
