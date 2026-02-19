@@ -119,12 +119,12 @@ watch(
       <div>
         <div class="ticket-container py-4">
           <Receipt :ticketInfo="ticketInfo" v-if="activeTab == 'receipt'" />
-          <Receipt5g :ticketInfo="ticketInfo" v-if="activeTab == 'receipt5g'" />
+          <!-- <Receipt5g :ticketInfo="ticketInfo" v-if="activeTab == 'receipt5g'" /> -->
           <Ticket :ticketInfo="ticketInfo" v-if="activeTab == 'ticket'" />
           <template v-if="activeTab == ''">
             <h2 class="text-2xl">请选择车票类型！</h2>
           </template>
-          <template v-if="activeTab == 'receipt'||activeTab == 'receipt5g'||activeTab == 'ticket'">
+          <template v-if="activeTab == 'receipt5g'">
             <h2 class="text-2xl">修复bug中，敬请期待！</h2>
           </template>
         </div>

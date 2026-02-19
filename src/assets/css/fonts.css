@@ -49,8 +49,9 @@
 }
 
 @font-face {
-  font-family: 'FangSong GB2312';
-  src: url('../fonts/FangSong_GB2312.woff') format('woff');
+  font-family: 'FangSong_GB2312';
+  src: url('../fonts/FangSong_GB2312.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
+
