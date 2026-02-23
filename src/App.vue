@@ -8,14 +8,16 @@ import Tabs from '@/components/common/Tabs.vue'
 import InfoHead from '@/components/common/InfoHead.vue'
 import Footer from '@/components/common/Footer.vue'
 
-import Receipt from '@/components/Receipt.vue'
-import Receipt5g from '@/components/Receipt5g.vue'
-import Ticket from './components/Ticket.vue'
+import blueReceipt from '@/components/blueReceipt.vue'
+import blueTicket from '@/components/blueTicket.vue'
+import redReceipt from '@/components/redReceipt.vue'
+import redTicket from '@/components/redTicket.vue'
 
 const tabs = ref([
-  { label: '蓝票（报销凭证）', key: 'receipt' },
-  { label: '蓝票（5代磁介质实名车票）', key: 'receipt5g' },
-  { label: '红票（3代软质车票）', key: 'ticket' },
+  { label: '蓝票（报销凭证）', key: 'blueReceipt' },
+  { label: '蓝票（实名车票）', key: 'blueTicket' },
+  { label: '红票（报销凭证）', key: 'redReceipt' },
+  { label: '红票（实名车票）', key: 'redTicket' },
 ])
 
 const activeTab = ref('')
@@ -52,7 +54,9 @@ const fieldInfo = ref<FieldInfoData>({
   qrCodeId: { label: '二维码内容', type: 'text', colSpan: 1, maxLength: 144 },
   isChild: { label: '儿童票', type: 'checkbox', colSpan: 1 },
   isStudent: { label: '学生票', type: 'checkbox', colSpan: 1 },
+  isNet: { label: '网络售票', type: 'checkbox', colSpan: 1 },
   isDiscount: { label: '优惠票', type: 'checkbox', colSpan: 1 },
+  isRefund: { label: '退票费', type: 'checkbox', colSpan: 1 },
 })
 
 const ticketInfo = ref<TicketData>({
@@ -75,7 +79,10 @@ const ticketInfo = ref<TicketData>({
   qrCodeId: 'https://github.com/BI7AQU/train-ticket-generator',
   isChild: false,
   isStudent: false,
+  isNet: true,
   isDiscount: true,
+  isRefund: false,
+  
 })
 
 watch(
@@ -105,6 +112,7 @@ watch(
   },
   { deep: true },
 )
+
 </script>
 
 <template>
@@ -118,14 +126,12 @@ watch(
       
       <div>
         <div class="ticket-container py-4">
-          <Receipt :ticketInfo="ticketInfo" v-if="activeTab == 'receipt'" />
-          <!-- <Receipt5g :ticketInfo="ticketInfo" v-if="activeTab == 'receipt5g'" /> -->
-          <Ticket :ticketInfo="ticketInfo" v-if="activeTab == 'ticket'" />
-          <template v-if="activeTab == ''">
+          <blueReceipt :ticketInfo="ticketInfo" v-if="activeTab == 'blueReceipt'" />
+          <blueTicket :ticketInfo="ticketInfo" v-if="activeTab == 'blueTicket'" />
+          <redReceipt :ticketInfo="ticketInfo" v-if="activeTab == 'redReceipt'" />
+          <redTicket :ticketInfo="ticketInfo" v-if="activeTab == 'redTicket'" />
+          <template v-else-if="activeTab == ''">
             <h2 class="text-2xl">请选择车票类型！</h2>
-          </template>
-          <template v-if="activeTab == 'receipt5g'">
-            <h2 class="text-2xl">修复bug中，敬请期待！</h2>
           </template>
         </div>
       </div> 

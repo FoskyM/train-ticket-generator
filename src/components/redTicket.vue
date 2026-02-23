@@ -1,5 +1,5 @@
 <template>
-<!-- 红票（3代软质车票）） -->
+<!-- 红票（实名车票） -->
   <div
     v-show="activeTab == 'ticket2D'"
     class="flex flex-col md:flex-row gap-4 justify-between w-full py-4"
