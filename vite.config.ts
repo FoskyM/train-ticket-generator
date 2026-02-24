@@ -2,12 +2,25 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import obfuscator from 'rollup-plugin-obfuscator'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? 'https://image.fosky.top/projects/ticket/' : './',
+  base: './',
   plugins: [
     vue(),
+    obfuscator({
+      global: true,
+      options: {
+        compact: true,
+        controlFlowFlattening: true,
+        deadCodeInjection: true,
+        stringArrayEncoding: ['base64'],
+        disableConsoleOutput: true,
+        debugProtection: true,
+        selfDefending: true
+        }
+      })
   ],
   resolve: {
     alias: {
@@ -15,3 +28,5 @@ export default defineConfig({
     }
   }
 })
+
+

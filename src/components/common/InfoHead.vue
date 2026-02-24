@@ -1,33 +1,11 @@
 <template>
   <div class="header mb-4">
-    <h2 class="text-2xl font-bold">火车票生成器</h2>
-    <p class="text-sm text-gray-500">
-      本项目仅供学习交流使用，转载请注明出处，不得用于商业或违法用途。<br />
-      图标与车票版式版权归中国铁路及相关集团所有，本项目与其无任何关联。
-    </p>
-    <div class="text-sm text-gray-500">
-      <a
-        href="https://github.com/FoskyM/train-ticket-generator"
-        target="_blank"
-        class="text-indigo-500 underline"
-        >train-ticket-generator</a
-      >
-      © 2024 This project is licensed under AGPLv3. 2024-present copyright by
-      <a href="https://fosky.top" target="_blank" class="text-indigo-500 underline">FoskyM</a>.
-    </div>
-    <div class="github inline-flex pt-2 gap-1">
-      <img
-        src="https://img.shields.io/github/stars/FoskyM/train-ticket-generator.svg"
-        alt="Stars"
-      />
-      <img
-        src="https://img.shields.io/github/forks/FoskyM/train-ticket-generator.svg"
-        alt="Forks"
-      />
-      <img
-        src="https://img.shields.io/github/issues/FoskyM/train-ticket-generator.svg"
-        alt="Issues"
-      />
-    </div>
+    <h2 class="text-2xl font-bold">纪念车票生成器</h2>    
+      <p class="text-sm text-gray-500 mt-2">
+      ☆仅供学习交流使用，不得用于商业或违法用途。
+      产生的任何法律后果与本项目及作者无关。 <br>
+      ☆如遇字体无法加载，请尝试切换车票种类。 <br>
+      ☆下票号(21字符)=车站TMIS(5位数)+出票机器类型(2位数，00-09为人工售票窗口，20-29为车票代售点，30-39为自动售票机)+出票机器编号(3位数)+结算日期(4位数，MMDD格式)+票纸编号(7字符，一般为1字母+6数字)
+      </p>
   </div>
 </template>

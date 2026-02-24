@@ -1,0 +1,57 @@
+/* 导入字体 */
+@font-face {
+  font-family: 'Maxim Sans Regular';
+  src: url('../fonts/maxim-sans-regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'bxpz Regular';
+  src: url('../fonts/bxpz-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SimSun';
+  src: url('../fonts/simsun.ttc') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SimSun';
+  src: url('../fonts/simsunbd.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SimHei';
+  src: url('../fonts/simhei.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Times New Roman';
+  src: url('../fonts/times.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FangSong';
+  src: url('../fonts/simfang.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FangSong_GB2312';
+  src: url('../fonts/FangSong_GB2312.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
