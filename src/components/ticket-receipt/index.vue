@@ -182,8 +182,6 @@ import {
   canvasHeight,
   drawTicket,
   drawTicketBack,
-  drawTicket3D,
-  drawTicketBack3D,
 } from './renderer2d'
 
 // 打印工具
@@ -488,12 +486,12 @@ const redrawAllInternal = () => {
 
   // 3D Canvas 贴图
   if (ticketCanvas3D.value) {
-    drawTicket3D(ticketCanvas3D.value, props.ticketInfo, config, () => {
+    drawTicket(ticketCanvas3D.value, props.ticketInfo, config, () => {
       updateTextures(state3D)
     })
   }
   if (ticketBackCanvas3D.value) {
-    drawTicketBack3D(ticketBackCanvas3D.value, config, () => {
+    drawTicketBack(ticketBackCanvas3D.value, config, () => {
       updateTextures(state3D)
     })
   }

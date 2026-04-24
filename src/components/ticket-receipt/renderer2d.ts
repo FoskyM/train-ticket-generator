@@ -30,6 +30,7 @@ import {
   drawRoundRect,
   drawDiagonalPattern,
   drawImageWithWear,
+  createTicketClipPath,
   type TrapezoidConfig,
 } from '@/utils/canvas'
 import { buildFontString } from '@/utils/font'
@@ -42,6 +43,13 @@ export const canvasHeight = 539
 export const protrusionHeight = 40
 export const protrusionWidth = 10
 const leftOffset = 80
+
+const ticketTrapezoids: TrapezoidConfig[] = [
+  { x: 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
+  { x: canvasWidth - 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
+  { x: 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
+  { x: canvasWidth - 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
+]
 
 /**
  * 绘制车票正面详细内容
@@ -97,41 +105,6 @@ export const drawTicketDetails = (
   )
 
   // 斜线纹理 - 使用优化后的裁剪方案，确保不超出圆角边界且覆盖梯形
-  const trapezoids: TrapezoidConfig[] = [
-    {
-      x: 10,
-      y: canvasHeight * 0.2,
-      width: protrusionWidth,
-      height: protrusionHeight,
-      offset: 5,
-      direction: 'left',
-    },
-    {
-      x: canvasWidth - 10,
-      y: canvasHeight * 0.2,
-      width: protrusionWidth,
-      height: protrusionHeight,
-      offset: 5,
-      direction: 'right',
-    },
-    {
-      x: 10,
-      y: canvasHeight * 0.8,
-      width: protrusionWidth,
-      height: protrusionHeight,
-      offset: 5,
-      direction: 'left',
-    },
-    {
-      x: canvasWidth - 10,
-      y: canvasHeight * 0.8,
-      width: protrusionWidth,
-      height: protrusionHeight,
-      offset: 5,
-      direction: 'right',
-    },
-  ]
-
   drawDiagonalPattern(
     ctx,
     canvasWidth,
@@ -141,7 +114,7 @@ export const drawTicketDetails = (
     canvasWidth - 40, // rectWidth
     canvasHeight - 20, // rectHeight
     20, // radius
-    trapezoids,
+    ticketTrapezoids,
     'rgba(173, 216, 230, .5)', // strokeStyle
     1, // lineWidth
     5, // spacing
@@ -378,102 +351,24 @@ export const drawTicketDetails = (
 }
 
 /**
- * 绘制车票正面（2D 显示用，带白色背景）
+ * 绘制车票正面（白色背景裁剪到票面形状）
  */
 export const drawTicket = (
   canvas: HTMLCanvasElement,
   ticketInfo: Record<string, any>,
   styleConfig: TicketStyleConfig,
-) => {
-  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  const backgroundImage = new Image()
-  backgroundImage.src = CRHImage
-  backgroundImage.onload = () => {
-    const paddingX = 40
-    const paddingY = 100
-    const imgWidth = canvasWidth - 2 * paddingX
-    const imgHeight = canvasHeight - 2 * paddingY
-    const centerX = paddingX
-    const centerY = paddingY
-
-    ctx.globalAlpha = 0.05
-    ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight)
-    ctx.globalAlpha = 1.0
-
-    drawTicketDetails(canvas, ctx, ticketInfo, styleConfig)
-  }
-}
-
-/**
- * 绘制车票背面（2D 显示用，带白色背景）
- */
-export const drawTicketBack = (canvas: HTMLCanvasElement, styleConfig: TicketStyleConfig) => {
-  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-  const fonts = styleConfig.fonts
-  const wearEffect = styleConfig.wearEffect
-
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  // 圆角矩形
-  drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(0, 0, 0, .9)')
-  // 两边凸出的梯形小块
-  drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'left')
-  drawTrapezoid(
-    ctx,
-    canvasWidth - 10,
-    canvasHeight * 0.2,
-    protrusionWidth,
-    protrusionHeight,
-    5,
-    'right',
-  )
-  drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left')
-  drawTrapezoid(
-    ctx,
-    canvasWidth - 10,
-    canvasHeight * 0.8,
-    protrusionWidth,
-    protrusionHeight,
-    5,
-    'right',
-  )
-
-  ctx.font = buildFontString(fonts.backTitle.family, fonts.backTitle.size)
-  const text = '报销凭证使用须知'
-  const textWidth = getTextWidth(ctx, text)
-  const color = [180, 180, 180]
-  drawCustomText(ctx, text, canvasWidth / 2 - textWidth / 2, 80, 0, color, wearEffect)
-
-  ctx.font = buildFontString(fonts.backContent.family, fonts.backContent.size)
-  const paragraph =
-    '☆购票后如需报销凭证的，应在开车前或乘车日期之日起180日以内(含当日)，持购票时所使用的有效身份证件原件到车站售票窗口、自动售票机领取。☆退票后如需退票费报销凭证，应在办理之日起180天以内(含当日)，持购票时所使用的有效身份证件原件到车站退票窗口领取。☆报销凭证开具后请妥善保管，丢失后将无法办理补办申领手续。☆已领取报销凭证的车票办理改签、退票或退款手续时，须交回报销凭证方可办理。☆报销凭证不能作为乘车凭证使用。☆未尽事宜见《国铁集团铁路旅客运输规程》等有关规定和车站公告。跨境旅客事宜见铁路跨境旅客相关运输组织规则和车站公告。'
-
-  const paragraphs = paragraph
-    .split('☆')
-    .filter((p) => p !== '')
-    .map((p) => '☆' + p)
-  drawParagraph(ctx, paragraphs, 40, 45, 140, 35, canvasWidth - 90, -1, color, wearEffect)
-}
-
-/**
- * 绘制车票正面（3D 贴图用，透明背景）
- */
-export const drawTicket3D = (
-  canvas: HTMLCanvasElement,
-  ticketInfo: Record<string, any>,
-  styleConfig: TicketStyleConfig,
   callback?: () => void,
 ) => {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-
-  // 透明背景
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  // 将白色背景裁剪到票面形状，避免票面外出现白色冗余
+  ctx.save()
+  createTicketClipPath(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, ticketTrapezoids)
+  ctx.clip()
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.restore()
 
   const backgroundImage = new Image()
   backgroundImage.src = CRHImage
@@ -489,15 +384,14 @@ export const drawTicket3D = (
     ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight)
     ctx.globalAlpha = 1.0
 
-    // 将 callback 传递给 drawTicketDetails，等待二维码加载完成后调用
     drawTicketDetails(canvas, ctx, ticketInfo, styleConfig, callback)
   }
 }
 
 /**
- * 绘制车票背面（3D 贴图用，透明背景）
+ * 绘制车票背面（白色背景裁剪到票面形状）
  */
-export const drawTicketBack3D = (
+export const drawTicketBack = (
   canvas: HTMLCanvasElement,
   styleConfig: TicketStyleConfig,
   callback?: () => void,
@@ -506,8 +400,15 @@ export const drawTicketBack3D = (
   const fonts = styleConfig.fonts
   const wearEffect = styleConfig.wearEffect
 
-  // 透明背景
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  // 将白色背景裁剪到票面形状
+  ctx.save()
+  createTicketClipPath(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, ticketTrapezoids)
+  ctx.clip()
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  ctx.restore()
 
   // 圆角矩形
   drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(0, 0, 0, .9)')

@@ -399,6 +399,7 @@ export {
   drawTrapezoid,
   drawRoundRect,
   drawDiagonalPattern,
+  createTicketClipPath,
   clearWearTextureCache,
   type TrapezoidConfig,
 }
