@@ -22,13 +22,25 @@
 <template>
   <div class="header mb-4">
     <div class="flex items-center justify-between flex-wrap gap-2">
-      <h2 class="text-2xl font-bold">火车票生成器</h2>
+      <h2 class="text-2xl font-bold dark:text-white">火车票生成器</h2>
       <div class="flex items-center gap-2">
+        <button
+          @click="toggleDark"
+          class="inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors"
+          :title="isDark ? '切换到浅色模式' : '切换到深色模式'"
+        >
+          <svg v-if="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
         <a
           :href="projectInfo.repository"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <path
@@ -37,13 +49,13 @@
           </svg>
           <span>GitHub</span>
         </a>
-        <span class="text-gray-300">|</span>
+        <span class="text-gray-300 dark:text-gray-600">|</span>
         <button @click="showChangelog = true" class="version-badge" title="查看更新记录">
           v{{ latestVersion }}
         </button>
       </div>
     </div>
-    <p class="text-sm text-gray-500 mt-2">
+    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
       {{ projectInfo.description }}。图标与车票版式版权归中国铁路及相关集团所有。
     </p>
 
@@ -75,18 +87,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import changelogData from '@/data/changelog.json'
 
 const projectInfo = changelogData.project
 const changelog = changelogData.changelog
 const latestVersion = changelog[0]?.version || '0.0.0'
 const showChangelog = ref(false)
+
+const isDark = ref(false)
+
+const applyDark = (dark: boolean) => {
+  document.documentElement.classList.toggle('dark', dark)
+  localStorage.setItem('theme', dark ? 'dark' : 'light')
+}
+
+const toggleDark = () => {
+  isDark.value = !isDark.value
+  applyDark(isDark.value)
+}
+
+onMounted(() => {
+  const saved = localStorage.getItem('theme')
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    isDark.value = true
+    applyDark(true)
+  }
+})
 </script>
 
 <style scoped>
 .version-badge {
   @apply text-xs font-mono px-1.5 py-0.5 bg-indigo-100 text-indigo-600 rounded cursor-pointer hover:bg-indigo-200 transition-colors;
+  @apply dark:bg-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-800/50;
 }
 
 /* Modal 样式 */
@@ -96,18 +129,19 @@ const showChangelog = ref(false)
 
 .modal-content {
   @apply bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] flex flex-col;
+  @apply dark:bg-gray-800;
 }
 
 .modal-header {
-  @apply flex items-center justify-between px-4 py-3 border-b border-gray-200;
+  @apply flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700;
 }
 
 .modal-header h3 {
-  @apply text-lg font-semibold text-gray-800;
+  @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
 }
 
 .close-btn {
-  @apply text-2xl text-gray-400 hover:text-gray-600 transition-colors leading-none;
+  @apply text-2xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors leading-none;
 }
 
 .modal-body {
@@ -123,7 +157,7 @@ const showChangelog = ref(false)
 }
 
 .release-version {
-  @apply font-mono font-semibold text-indigo-600;
+  @apply font-mono font-semibold text-indigo-600 dark:text-indigo-400;
 }
 
 .release-date {
@@ -131,7 +165,7 @@ const showChangelog = ref(false)
 }
 
 .release-changes {
-  @apply list-disc list-inside text-sm text-gray-600 space-y-1 pl-2;
+  @apply list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1 pl-2;
 }
 
 /* Modal 动画 */

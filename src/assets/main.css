@@ -29,6 +29,13 @@ body,
   font-family: 'Nunito', sans-serif;
   background-color: #f7fafc;
   height: 100vh;
+  transition: background-color 0.2s ease;
+}
+
+html.dark,
+html.dark body,
+html.dark #app {
+  background-color: #1a1a2e;
 }
 
 .tab {
@@ -36,7 +43,7 @@ body,
 }
 
 .tab-item {
-  @apply cursor-pointer px-2 border border-gray-300 select-none;
+  @apply cursor-pointer px-2 border border-gray-300 select-none dark:border-gray-600 dark:text-gray-300;
 }
 
 .tab-item:first-child {
@@ -48,9 +55,9 @@ body,
 }
 
 .tab-item:hover {
-  @apply bg-gray-100;
+  @apply bg-gray-100 dark:bg-gray-700;
 }
 
 .tab-item.active {
-  @apply bg-gray-200;
+  @apply bg-gray-200 dark:bg-gray-600;
 }

@@ -73,7 +73,7 @@ const currentYear = new Date().getFullYear()
 
 <style scoped>
 .app-footer {
-  @apply mt-6 py-3 text-center text-sm text-gray-500;
+  @apply mt-6 py-3 text-center text-sm text-gray-500 dark:text-gray-400;
 }
 
 .footer-content {
@@ -81,18 +81,18 @@ const currentYear = new Date().getFullYear()
 }
 
 .link {
-  @apply hover:text-indigo-600 transition-colors;
+  @apply hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors;
 }
 
 .license {
-  @apply text-gray-400 hover:text-indigo-600 transition-colors;
+  @apply text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors;
 }
 
 .separator {
-  @apply text-gray-300;
+  @apply text-gray-300 dark:text-gray-600;
 }
 
 .commit-link {
-  @apply font-mono text-gray-400 hover:text-indigo-600 transition-colors;
+  @apply font-mono text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors;
 }
 </style>

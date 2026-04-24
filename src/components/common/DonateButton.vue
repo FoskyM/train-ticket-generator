@@ -105,6 +105,7 @@ onMounted(() => {
   @apply flex items-center justify-center cursor-pointer transition-all;
   @apply hover:bg-indigo-600 hover:scale-110 hover:shadow-lg;
   @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  @apply dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:focus:ring-offset-gray-900;
 }
 
 .fab-icon {
@@ -159,19 +160,19 @@ onMounted(() => {
 
 /* 弹窗内容 */
 .donate-modal {
-  @apply bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden;
+  @apply bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden dark:bg-gray-800;
 }
 
 .donate-header {
-  @apply flex items-center justify-between px-4 py-3 border-b border-gray-200;
+  @apply flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700;
 }
 
 .donate-header h3 {
-  @apply text-lg font-semibold text-gray-800;
+  @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
 }
 
 .close-btn {
-  @apply text-2xl text-gray-400 hover:text-gray-600 transition-colors leading-none;
+  @apply text-2xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors leading-none;
 }
 
 .donate-body {
@@ -179,7 +180,7 @@ onMounted(() => {
 }
 
 .donate-desc {
-  @apply text-gray-600 mb-4;
+  @apply text-gray-600 dark:text-gray-300 mb-4;
 }
 
 .qrcode-container {
@@ -187,7 +188,7 @@ onMounted(() => {
 }
 
 .qrcode-img {
-  @apply w-56 h-56 rounded-lg border border-gray-200;
+  @apply w-56 h-56 rounded-lg border border-gray-200 dark:border-gray-700;
 }
 
 .donate-tip {
@@ -195,11 +196,11 @@ onMounted(() => {
 }
 
 .donate-footer-links {
-  @apply pt-3 border-t border-gray-100;
+  @apply pt-3 border-t border-gray-100 dark:border-gray-700;
 }
 
 .donate-footer-links a {
-  @apply text-sm text-indigo-500 hover:text-indigo-600 transition-colors;
+  @apply text-sm text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors;
 }
 
 /* 弹窗动画 */

@@ -28,7 +28,7 @@
     >
       <div class="flex items-center gap-2">
         <svg
-          class="w-4 h-4 text-gray-500 transition-transform duration-200"
+          class="w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200"
           :class="{ 'rotate-90': isExpanded }"
           fill="none"
           stroke="currentColor"
@@ -36,7 +36,7 @@
         >
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
-        <h3 class="text-sm font-medium text-gray-700">样式配置</h3>
+        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">样式配置</h3>
       </div>
       <button
         @click.stop="loadLocalFonts"
@@ -58,15 +58,15 @@
               type="checkbox"
               :checked="modelValue.wearEffect?.enabled"
               @change="updateWearEnabled(($event.target as HTMLInputElement).checked)"
-              class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
             />
-            <span class="text-sm text-gray-700">磨损效果</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300">磨损效果</span>
           </label>
           <div
             v-if="modelValue.wearEffect?.enabled"
             class="flex items-center gap-2 flex-1 min-w-[180px]"
           >
-            <span class="text-sm text-gray-500">强度</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">强度</span>
             <input
               type="range"
               :value="modelValue.wearEffect?.intensity ?? 0.7"
@@ -74,9 +74,9 @@
               min="0"
               max="1"
               step="0.1"
-              class="flex-1 max-w-32 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+              class="flex-1 max-w-32 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-600"
             />
-            <span class="text-sm text-gray-500 w-8 text-right">
+            <span class="text-sm text-gray-500 dark:text-gray-400 w-8 text-right">
               {{ ((modelValue.wearEffect?.intensity ?? 0.7) * 100).toFixed(0) }}%
             </span>
           </div>
@@ -88,14 +88,14 @@
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-3 sm:gap-y-2"
           >
             <div v-for="field in group.fields" :key="field.key">
-              <label class="block text-sm font-medium text-gray-700 mb-1.5 sm:mb-1">{{
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 sm:mb-1">{{
                 field.label
               }}</label>
               <div class="flex gap-2 sm:gap-1">
                 <select
                   :value="modelValue.fonts[field.key]?.family"
                   @change="updateFontFamily(field.key, ($event.target as HTMLSelectElement).value)"
-                  class="flex-1 min-w-0 px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  class="flex-1 min-w-0 px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                 >
                   <option v-for="font in fontList" :key="font" :value="font">
                     {{ font }}
@@ -109,20 +109,20 @@
                   "
                   :min="field.sizeMin"
                   :max="field.sizeMax"
-                  class="w-14 sm:w-12 px-1 py-1 text-center border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:ext-sm"
+                  class="w-14 sm:w-12 px-1 py-1 text-center border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:ext-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                 />
               </div>
             </div>
           </div>
           <!-- 分组分隔线 -->
-          <hr v-if="groupIndex < fieldGroups.length - 1" class="border-gray-200 mt-3" />
+          <hr v-if="groupIndex < fieldGroups.length - 1" class="border-gray-200 dark:border-gray-700 mt-3" />
         </div>
 
         <!-- 底部操作 -->
-        <div class="flex justify-end pt-2 border-t border-gray-200">
+        <div class="flex justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
           <button
             @click="resetToDefault"
-            class="px-2 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            class="px-2 py-1 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
           >
             重置默认
           </button>
@@ -174,13 +174,13 @@ const fontLoadButtonText = computed(() => {
 const fontLoadButtonClass = computed(() => {
   switch (fontLoadStatus.value) {
     case 'loading':
-      return 'text-gray-400 bg-gray-100 cursor-wait'
+      return 'text-gray-400 bg-gray-100 dark:bg-gray-600 dark:text-gray-500 cursor-wait'
     case 'success':
-      return 'text-green-600 bg-green-50 hover:bg-green-100'
+      return 'text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50'
     case 'error':
-      return 'text-red-600 bg-red-50 hover:bg-red-100'
+      return 'text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50'
     default:
-      return 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100'
+      return 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50'
   }
 })
 
@@ -260,7 +260,7 @@ const resetToDefault = () => {
 
 <style scoped>
 .style-config-form {
-  @apply px-4 py-3 bg-gray-50 rounded-lg border border-gray-200;
+  @apply px-4 py-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700;
 }
 
 /* 展开/收起动画 */

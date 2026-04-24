@@ -28,7 +28,7 @@
         :class="`col-span-${field.colSpan}`"
         class="space-y-2"
       >
-        <label :for="field.key" class="block text-sm font-medium text-gray-700">{{
+        <label :for="field.key" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{
           field.label
         }}</label>
         <template v-if="field.type === 'select'">
@@ -36,7 +36,7 @@
             v-model="data[field.key]"
             :id="field.key"
             :disabled="field.disabled"
-            class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
           >
             <option v-for="item in field.data" :key="item" :value="item">
               {{ item }}
@@ -50,9 +50,9 @@
               :id="field.key"
               :disabled="fieldInfo[field.key].disabled"
               v-model="data[field.key]"
-              class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
             />
-            <label :for="field.key" class="ml-2 block text-sm text-gray-900 select-none">{{
+            <label :for="field.key" class="ml-2 block text-sm text-gray-900 dark:text-gray-200 select-none">{{
               field.label
             }}</label>
           </div>
@@ -69,7 +69,7 @@
             @compositionstart="handleCompositionStart"
             @compositionend="handleCompositionEnd"
             v-model="data[field.key]"
-            class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
           />
         </template>
       </div>

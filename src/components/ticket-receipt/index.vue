@@ -27,7 +27,7 @@
     <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-4">
       <button
         @click="printTicket"
-        class="px-3 py-1 text-sm text-white bg-indigo-500 border border-indigo-500 rounded-md hover:bg-indigo-600 transition-colors"
+        class="px-3 py-1 text-sm text-white bg-indigo-500 border border-indigo-500 rounded-md hover:bg-indigo-600 transition-colors dark:bg-indigo-600 dark:border-indigo-600 dark:hover:bg-indigo-500"
       >
         打印（双面）
       </button>
@@ -64,42 +64,42 @@
         <input
           type="checkbox"
           v-model="config3D.autoRotate"
-          class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+          class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
         />
-        <span class="text-sm text-gray-700">自动旋转</span>
+        <span class="text-sm text-gray-700 dark:text-gray-300">自动旋转</span>
       </label>
 
       <!-- 旋转速度 -->
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500">速度</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">速度</span>
         <input
           type="range"
           v-model.number="config3D.rotationSpeed"
           :min="ROTATION_SPEED_MIN"
           :max="ROTATION_SPEED_MAX"
           :step="ROTATION_SPEED_STEP"
-          class="w-20 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+          class="w-20 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-indigo-600"
         />
-        <span class="text-sm text-gray-500 w-8">{{ config3D.rotationSpeed.toFixed(1) }}x</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400 w-8">{{ config3D.rotationSpeed.toFixed(1) }}x</span>
       </div>
 
       <!-- 缩放 -->
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500">缩放</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">缩放</span>
         <button
           @click="zoomOut"
           :disabled="config3D.zoom <= ZOOM_MIN"
-          class="w-6 h-6 flex items-center justify-center text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-6 h-6 flex items-center justify-center text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           -
         </button>
-        <span class="text-sm text-gray-600 w-12 text-center"
+        <span class="text-sm text-gray-600 dark:text-gray-300 w-12 text-center"
           >{{ (config3D.zoom * 100).toFixed(0) }}%</span
         >
         <button
           @click="zoomIn"
           :disabled="config3D.zoom >= ZOOM_MAX"
-          class="w-6 h-6 flex items-center justify-center text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-6 h-6 flex items-center justify-center text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           +
         </button>
@@ -108,7 +108,7 @@
       <!-- 重置按钮 -->
       <button
         @click="resetView"
-        class="px-3 py-1 text-sm text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        class="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
       >
         重置视角
       </button>
@@ -116,7 +116,7 @@
       <!-- 全屏按钮 -->
       <button
         @click="openFullscreen('3d')"
-        class="px-3 py-1 text-sm text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        class="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
       >
         全屏
       </button>
@@ -125,7 +125,7 @@
     <!-- Three.js 渲染容器 -->
     <div ref="threeContainer" class="ticket-3d-container"></div>
 
-    <p class="text-center text-sm text-gray-500 mt-4">拖拽旋转 / 滚轮缩放</p>
+    <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">拖拽旋转 / 滚轮缩放</p>
 
     <!-- 隐藏的 canvas 用于生成贴图 -->
     <canvas

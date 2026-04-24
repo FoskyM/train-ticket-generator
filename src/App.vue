@@ -149,7 +149,7 @@ watch(
 
 <template>
   <div class="container px-5 py-5 md:py-16 xl:py-24 mx-auto my-auto h-fit">
-    <div class="items-center justify-between p-4 rounded-lg bg-white shadow-indigo-50 shadow-md">
+    <div class="items-center justify-between p-4 rounded-lg bg-white dark:bg-gray-800 shadow-indigo-50 dark:shadow-none shadow-md">
       <InfoHead />
 
       <DynamicForm class="mb-4" v-model="ticketInfo" v-model:fields="fieldInfo" />
@@ -176,10 +176,10 @@ watch(
           @vue:mounted="onTicketMounted"
         />
         <template v-else-if="activeTab === ''">
-          <h2 class="text-2xl">请选择车票类型</h2>
+          <h2 class="text-2xl dark:text-white">请选择车票类型</h2>
         </template>
         <template v-else>
-          <h2 class="text-2xl">其它车票仍在开发中，敬请期待！</h2>
+          <h2 class="text-2xl dark:text-white">其它车票仍在开发中，敬请期待！</h2>
         </template>
       </div>
     </div>
