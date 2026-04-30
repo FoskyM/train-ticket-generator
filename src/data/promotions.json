@@ -1,0 +1,23 @@
+[
+  {
+    "name": "FoskyM",
+    "description": "作者的个人主页与更多项目",
+    "url": "https://fosky.top",
+    "icon": "https://image.fosky.top/projects/homepage/assets/images/avatar-ubPFRZir.jpg",
+    "color": "#dd7694"
+  },
+  {
+    "name": "Narrafork",
+    "description": "一个以「叙事分叉」为核心隐喻的 Web AI 协作编程平台",
+    "url": "https://narra.maplex.top/",
+    "icon": "https://avatars.githubusercontent.com/u/263337833?s=200&v=4",
+    "color": "#3b5bdb"
+  },
+  {
+    "name": "旅行票夹",
+    "description": "比本程序更加完善的仿真票据且支持云端同步，友情推荐",
+    "url": "https://ttf.fosky.net",
+    "icon": "https://ttf.fosky.net/favicon.ico",
+    "color": "#0A84FF"
+  }
+]

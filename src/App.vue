@@ -29,6 +29,7 @@ import InfoHead from '@/components/common/InfoHead.vue'
 import StyleConfigForm from '@/components/common/StyleConfigForm.vue'
 import AppFooter from '@/components/common/AppFooter.vue'
 import DonateButton from '@/components/common/DonateButton.vue'
+import PromotionBar from '@/components/common/PromotionBar.vue'
 import CustomSelect from '@/components/common/CustomSelect.vue'
 import TicketPreview from '@/components/common/TicketPreview.vue'
 import BadgeGroup from '@/components/common/BadgeGroup.vue'
@@ -221,6 +222,7 @@ const discountSelection = computed<string[]>({
   <div class="app-root">
     <div class="app-card">
       <InfoHead />
+      <PromotionBar />
 
       <div class="app-layout" :class="{ 'side-layout': isSideLayout }">
         <!-- 表单区 -->
