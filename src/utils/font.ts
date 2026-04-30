@@ -48,3 +48,35 @@ export const getLocalFonts = async (): Promise<string[]> => {
   }
   return []
 }
+
+/**
+ * 检测字体是否在当前系统可用
+ * 通过 Canvas 测量法：比较目标字体与 monospace 的渲染宽度
+ */
+const fontCheckCache = new Map<string, boolean>()
+
+export const checkFontAvailable = (family: string): boolean => {
+  if (fontCheckCache.has(family)) return fontCheckCache.get(family)!
+
+  // 通用字体族始终可用
+  const generic = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy']
+  if (generic.includes(family.toLowerCase())) {
+    fontCheckCache.set(family, true)
+    return true
+  }
+
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  const testStr = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const size = '72px'
+
+  ctx.font = `${size} monospace`
+  const baseWidth = ctx.measureText(testStr).width
+
+  ctx.font = `${size} '${family}', monospace`
+  const testWidth = ctx.measureText(testStr).width
+
+  const available = testWidth !== baseWidth
+  fontCheckCache.set(family, available)
+  return available
+}

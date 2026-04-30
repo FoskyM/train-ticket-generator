@@ -21,100 +21,134 @@
 
 <template>
   <form v-bind="$attrs">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div :class="gridClass">
       <div
         v-for="field in formFields"
         :key="field.key"
         :class="`col-span-${field.colSpan}`"
-        class="space-y-2"
+        class="space-y-1.5"
       >
-        <label :for="field.key" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{
-          field.label
-        }}</label>
-        <template v-if="field.type === 'select'">
-          <select
-            v-model="data[field.key]"
-            :id="field.key"
-            :disabled="field.disabled"
-            class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-          >
-            <option v-for="item in field.data" :key="item" :value="item">
-              {{ item }}
-            </option>
-          </select>
-        </template>
-        <template v-else-if="field.type === 'checkbox'">
-          <div class="flex items-center">
-            <input
-              :type="field.type"
-              :id="field.key"
-              :disabled="fieldInfo[field.key].disabled"
-              v-model="data[field.key]"
-              class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
-            />
-            <label :for="field.key" class="ml-2 block text-sm text-gray-900 dark:text-gray-200 select-none">{{
-              field.label
-            }}</label>
-          </div>
-        </template>
-        <template v-else>
-          <input
-            :type="field.type"
-            :step="field.step || null"
-            :maxlength="field.maxLength || null"
-            :max="field.max || null"
-            :id="field.key"
-            :disabled="field.disabled"
-            @input="field.onInput ? field.onInput($event) : null"
-            @compositionstart="handleCompositionStart"
-            @compositionend="handleCompositionEnd"
-            v-model="data[field.key]"
-            class="mt-1 block w-full px-3 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+        <label
+          v-if="field.type !== 'checkbox'"
+          :for="field.key"
+          class="block text-sm font-medium text-gray-600 dark:text-gray-400"
+        >
+          {{ field.label }}
+        </label>
+
+        <CustomSelect
+          v-if="field.type === 'select'"
+          :modelValue="String(data[field.key])"
+          @update:modelValue="data[field.key] = $event"
+          :options="field.data ?? []"
+          :disabled="field.disabled"
+        />
+
+        <DatePicker
+          v-else-if="field.type === 'date'"
+          :modelValue="String(data[field.key])"
+          @update:modelValue="data[field.key] = $event"
+          :disabled="field.disabled"
+        />
+
+        <TimePicker
+          v-else-if="field.type === 'time'"
+          :modelValue="String(data[field.key])"
+          @update:modelValue="data[field.key] = $event"
+          :disabled="field.disabled"
+        />
+
+        <div v-else-if="field.type === 'checkbox'" class="flex items-center gap-2.5 pt-1">
+          <ToggleSwitch
+            :modelValue="!!data[field.key]"
+            @update:modelValue="data[field.key] = $event"
+            :disabled="!!fieldInfo[field.key].disabled"
           />
-        </template>
+          <span class="text-sm text-gray-700 dark:text-gray-300 select-none">
+            {{ field.label }}
+          </span>
+        </div>
+
+        <NumberInput
+          v-else-if="field.type === 'number'"
+          :modelValue="data[field.key]"
+          @update:modelValue="data[field.key] = $event"
+          :min="0"
+          :max="field.max || Infinity"
+          :step="Number(field.step) || 1"
+          :disabled="field.disabled"
+          :fullWidth="true"
+        />
+
+        <input
+          v-else
+          :type="field.type"
+          :step="field.step || undefined"
+          :maxlength="field.maxLength || undefined"
+          :max="field.max || undefined"
+          :id="field.key"
+          :disabled="field.disabled"
+          @input="field.onInput ? field.onInput($event) : undefined"
+          @compositionstart="handleCompositionStart"
+          @compositionend="handleCompositionEnd"
+          v-model="data[field.key]"
+          class="form-input"
+        />
       </div>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { FieldInfoData } from '@/types'
+import DatePicker from '@/components/common/DatePicker.vue'
+import TimePicker from '@/components/common/TimePicker.vue'
+import CustomSelect from '@/components/common/CustomSelect.vue'
+import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
+import NumberInput from '@/components/common/NumberInput.vue'
+
+const props = withDefaults(
+  defineProps<{
+    compact?: boolean
+  }>(),
+  { compact: false },
+)
 
 const fieldInfo = defineModel<FieldInfoData>('fields', { required: true })
 const data = defineModel<Record<string, any>>('modelValue', { required: true })
 
+const gridClass = computed(() => {
+  if (props.compact) {
+    return 'grid grid-cols-1 sm:grid-cols-2 gap-4'
+  }
+  return 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'
+})
+
+/* IME 组合状态（非响应式，仅用于输入验证中间态） */
 let isComposing = false
 
 const validateChineseInput = (event: Event) => {
   if (isComposing) return
   const input = event.target as HTMLInputElement
-  const chineseRegex = /^[\u4e00-\u9fa5]*$/
-  if (!chineseRegex.test(input.value)) {
+  if (!/^[\u4e00-\u9fa5]*$/.test(input.value)) {
     input.value = input.value.replace(/[^\u4e00-\u9fa5]/g, '')
   }
 }
 
-const handleCompositionStart = () => {
-  isComposing = true
-}
-
-const handleCompositionEnd = (event: Event) => {
-  isComposing = false
-  validateChineseInput(event)
-}
+const handleCompositionStart = () => { isComposing = true }
+const handleCompositionEnd = (event: Event) => { isComposing = false; validateChineseInput(event) }
 
 const validateEnglishAndNumberInput = (event: Event) => {
   const input = event.target as HTMLInputElement
-  const englishAndNumberRegex = /^[A-Za-z0-9]*$/
-  if (!englishAndNumberRegex.test(input.value)) {
+  if (!/^[A-Za-z0-9]*$/.test(input.value)) {
     input.value = input.value.replace(/[^A-Za-z0-9]/g, '')
   }
 }
 
 const validateNumberInput = (event: Event, maxValue: number) => {
   const input = event.target as HTMLInputElement
-  const numberRegex = /^[0-9]*$/
-  if (!numberRegex.test(input.value)) {
+  if (!/^[0-9]*$/.test(input.value)) {
     input.value = input.value.replace(/[^0-9]/g, '')
   }
   if (parseInt(input.value) > maxValue) {
@@ -122,10 +156,24 @@ const validateNumberInput = (event: Event, maxValue: number) => {
   }
 }
 
-const generateFormFields = () => {
-  const fields: any = []
+interface FormField {
+  key: string
+  label: string
+  type: string
+  colSpan: number
+  disabled: boolean
+  data?: string[]
+  step?: string
+  maxLength?: number
+  max?: number
+  onInput?: (event: Event) => void
+}
+
+const generateFormFields = (): FormField[] => {
+  const fields: FormField[] = []
   for (const key in data.value) {
-    // const value = ticketInfo.value[key]
+    /* 跳过 fieldInfo 中未定义的字段（由外部组件单独管理） */
+    if (!fieldInfo.value[key]) continue
     fields.push({
       key,
       label: fieldInfo.value[key].label,
@@ -165,3 +213,26 @@ const generateFormFields = () => {
 
 const formFields = generateFormFields()
 </script>
+
+<style scoped>
+.form-input {
+  @apply block w-full px-3 py-2 text-sm rounded-lg transition-colors duration-150;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: white;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+html.dark .form-input {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #1c1c1e;
+  color: #e5e5e5;
+}
+
+html.dark .form-input:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+</style>

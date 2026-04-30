@@ -29,6 +29,7 @@ export interface Renderer3DConfig {
   autoRotate: boolean
   rotationSpeed: number
   zoom: number
+  showProtrusions: boolean
 }
 
 /**
@@ -72,6 +73,7 @@ export const defaultConfig: Renderer3DConfig = {
   autoRotate: true,
   rotationSpeed: 0.5,
   zoom: 1,
+  showProtrusions: true,
 }
 
 // 缩放范围常量
@@ -119,7 +121,7 @@ export const initThreeJS = (
   container.appendChild(state.renderer.domElement)
 
   // 创建车票几何体和材质
-  createTicketMesh(state, frontCanvas, backCanvas)
+  createTicketMesh(state, frontCanvas, backCanvas, config)
 
   // 添加环境光
   const ambientLight = new THREE.AmbientLight(0xffffff, 1)
@@ -146,6 +148,7 @@ const createTicketMesh = (
   state: Renderer3DState,
   frontCanvas: HTMLCanvasElement,
   backCanvas: HTMLCanvasElement,
+  config: Renderer3DConfig,
 ) => {
   if (!state.scene) return
 
@@ -179,6 +182,8 @@ const createTicketMesh = (
   const toShapeX = (x: number) => (x - canvasWidth / 2) * scaleX
   const toShapeY = (y: number) => (canvasHeight / 2 - y) * scaleY
 
+  const showProtrusions = config.showProtrusions !== false
+
   // 从左上角开始绘制圆角矩形（顺时针）
   const left = rectX
   const right = rectX + rectW
@@ -192,17 +197,19 @@ const createTicketMesh = (
   shape.lineTo(toShapeX(right - radius), toShapeY(top))
   shape.quadraticCurveTo(toShapeX(right), toShapeY(top), toShapeX(right), toShapeY(top + radius))
 
-  // 右边：需要在 trapY1 和 trapY2 处添加梯形突出
-  shape.lineTo(toShapeX(right), toShapeY(trapY1 - trapHeight / 2))
-  // 右上梯形
-  shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY1 - trapHeight / 2 + trapOffset))
-  shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY1 + trapHeight / 2 - trapOffset))
-  shape.lineTo(toShapeX(right), toShapeY(trapY1 + trapHeight / 2))
-  // 右下梯形
-  shape.lineTo(toShapeX(right), toShapeY(trapY2 - trapHeight / 2))
-  shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY2 - trapHeight / 2 + trapOffset))
-  shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY2 + trapHeight / 2 - trapOffset))
-  shape.lineTo(toShapeX(right), toShapeY(trapY2 + trapHeight / 2))
+  if (showProtrusions) {
+    // 右边：需要在 trapY1 和 trapY2 处添加梯形突出
+    shape.lineTo(toShapeX(right), toShapeY(trapY1 - trapHeight / 2))
+    // 右上梯形
+    shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY1 - trapHeight / 2 + trapOffset))
+    shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY1 + trapHeight / 2 - trapOffset))
+    shape.lineTo(toShapeX(right), toShapeY(trapY1 + trapHeight / 2))
+    // 右下梯形
+    shape.lineTo(toShapeX(right), toShapeY(trapY2 - trapHeight / 2))
+    shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY2 - trapHeight / 2 + trapOffset))
+    shape.lineTo(toShapeX(right + trapWidth), toShapeY(trapY2 + trapHeight / 2 - trapOffset))
+    shape.lineTo(toShapeX(right), toShapeY(trapY2 + trapHeight / 2))
+  }
 
   // 右边 -> 右下角圆角
   shape.lineTo(toShapeX(right), toShapeY(bottom - radius))
@@ -222,17 +229,19 @@ const createTicketMesh = (
     toShapeY(bottom - radius),
   )
 
-  // 左边：需要在 trapY2 和 trapY1 处添加梯形突出（逆序）
-  shape.lineTo(toShapeX(left), toShapeY(trapY2 + trapHeight / 2))
-  // 左下梯形
-  shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY2 + trapHeight / 2 - trapOffset))
-  shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY2 - trapHeight / 2 + trapOffset))
-  shape.lineTo(toShapeX(left), toShapeY(trapY2 - trapHeight / 2))
-  // 左上梯形
-  shape.lineTo(toShapeX(left), toShapeY(trapY1 + trapHeight / 2))
-  shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY1 + trapHeight / 2 - trapOffset))
-  shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY1 - trapHeight / 2 + trapOffset))
-  shape.lineTo(toShapeX(left), toShapeY(trapY1 - trapHeight / 2))
+  if (showProtrusions) {
+    // 左边：需要在 trapY2 和 trapY1 处添加梯形突出（逆序）
+    shape.lineTo(toShapeX(left), toShapeY(trapY2 + trapHeight / 2))
+    // 左下梯形
+    shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY2 + trapHeight / 2 - trapOffset))
+    shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY2 - trapHeight / 2 + trapOffset))
+    shape.lineTo(toShapeX(left), toShapeY(trapY2 - trapHeight / 2))
+    // 左上梯形
+    shape.lineTo(toShapeX(left), toShapeY(trapY1 + trapHeight / 2))
+    shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY1 + trapHeight / 2 - trapOffset))
+    shape.lineTo(toShapeX(left - trapWidth), toShapeY(trapY1 - trapHeight / 2 + trapOffset))
+    shape.lineTo(toShapeX(left), toShapeY(trapY1 - trapHeight / 2))
+  }
 
   // 左边 -> 左上角圆角
   shape.lineTo(toShapeX(left), toShapeY(top + radius))

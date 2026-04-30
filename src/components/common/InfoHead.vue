@@ -118,18 +118,22 @@ onMounted(() => {
 
 <style scoped>
 .version-badge {
-  @apply text-xs font-mono px-1.5 py-0.5 bg-indigo-100 text-indigo-600 rounded cursor-pointer hover:bg-indigo-200 transition-colors;
-  @apply dark:bg-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-800/50;
+  @apply text-xs font-mono px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded cursor-pointer hover:bg-blue-200 transition-colors;
+  @apply dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-800/30;
 }
 
 /* Modal 样式 */
 .modal-overlay {
-  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4;
+  @apply fixed inset-0 flex items-center justify-center z-50 p-4;
+  background: rgba(0,0,0,0.3);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
 }
 
 .modal-content {
-  @apply bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] flex flex-col;
+  @apply bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[80vh] flex flex-col;
   @apply dark:bg-gray-800;
+  overflow: hidden;
 }
 
 .modal-header {
@@ -141,11 +145,12 @@ onMounted(() => {
 }
 
 .close-btn {
-  @apply text-2xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors leading-none;
+  @apply text-2xl text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors leading-none rounded-lg active:scale-[0.95];
 }
 
 .modal-body {
   @apply p-4 overflow-y-auto;
+  overflow-y: overlay;
 }
 
 .release {

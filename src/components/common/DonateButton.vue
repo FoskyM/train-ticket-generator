@@ -101,11 +101,11 @@ onMounted(() => {
 
 /* 悬浮按钮 */
 .donate-fab {
-  @apply relative w-12 h-12 rounded-full bg-indigo-500 text-white shadow-md;
+  @apply relative w-12 h-12 rounded-full bg-blue-500 text-white shadow-md;
   @apply flex items-center justify-center cursor-pointer transition-all;
-  @apply hover:bg-indigo-600 hover:scale-110 hover:shadow-lg;
-  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
-  @apply dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:focus:ring-offset-gray-900;
+  @apply hover:bg-blue-600 hover:scale-110 hover:shadow-lg active:scale-[0.97];
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply dark:bg-blue-600 dark:hover:bg-blue-500 dark:focus:ring-offset-gray-900;
 }
 
 .fab-icon {
@@ -114,7 +114,7 @@ onMounted(() => {
 
 /* 闪动效果 */
 .fab-ping {
-  @apply absolute inset-0 rounded-full bg-indigo-400 opacity-75;
+  @apply absolute inset-0 rounded-full bg-blue-400 opacity-75;
   animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
@@ -155,12 +155,15 @@ onMounted(() => {
 
 /* 弹窗遮罩 */
 .donate-overlay {
-  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4;
+  @apply fixed inset-0 flex items-center justify-center z-50 p-4;
+  background: rgba(0,0,0,0.3);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
 }
 
 /* 弹窗内容 */
 .donate-modal {
-  @apply bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden dark:bg-gray-800;
+  @apply bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden dark:bg-gray-800;
 }
 
 .donate-header {
@@ -200,7 +203,7 @@ onMounted(() => {
 }
 
 .donate-footer-links a {
-  @apply text-sm text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors;
+  @apply text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors;
 }
 
 /* 弹窗动画 */

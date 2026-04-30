@@ -42,8 +42,11 @@ export type TicketData = {
   // 其他信息
   seatTypeCustom?: string // 自定义座位类型
   checkGate?: string // 检票口
-  isStudent?: boolean // 是否学生票
   isDiscount?: boolean // 是否优惠票
+
+  // badge 选择组
+  identity?: string // 身份：adult/student/child/military/disabled
+  payMethod?: string // 支付方式：wechat/alipay/cash/card
 
   [key: string]: any
 }
@@ -89,6 +92,12 @@ export type TicketStyleConfig = {
   }
   // 磨损效果配置
   wearEffect: WearEffectConfig
+  // 是否显示梯形突出
+  showProtrusions: boolean
+  // 背景图透明度 0-1
+  backgroundOpacity: number
+  // 二维码内容
+  qrContent: string
   [key: string]: any
 }
 
@@ -110,11 +119,46 @@ export type StyleFieldGroup = {
 }
 
 /**
+ * 票据正面绘制函数
+ */
+export type DrawFrontFn = (
+  canvas: HTMLCanvasElement,
+  ticketInfo: TicketData,
+  styleConfig: TicketStyleConfig,
+  callback?: () => void,
+) => void
+
+/**
+ * 票据背面绘制函数
+ */
+export type DrawBackFn = (
+  canvas: HTMLCanvasElement,
+  styleConfig: TicketStyleConfig,
+  callback?: () => void,
+) => void
+
+/**
  * 票据组件暴露的配置接口
  */
 export interface TicketComponentExpose {
   defaultStyleConfig: TicketStyleConfig
   styleFieldGroups: StyleFieldGroup[]
+  drawFront: DrawFrontFn
+  drawBack: DrawBackFn
+  canvasWidth: number
+  canvasHeight: number
+}
+
+/**
+ * 票据配置 - 纯数据，无 Vue 组件依赖
+ */
+export interface TicketConfig {
+  defaultStyleConfig: TicketStyleConfig
+  styleFieldGroups: StyleFieldGroup[]
+  drawFront: DrawFrontFn
+  drawBack: DrawBackFn
+  canvasWidth: number
+  canvasHeight: number
 }
 
 export type FieldInfoColumn = {

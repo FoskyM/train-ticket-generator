@@ -21,7 +21,7 @@
 
 import { pinyin } from 'pinyin-pro'
 import QRCode from 'qrcode'
-import type { TicketStyleConfig } from '@/types'
+import type { TicketStyleConfig, TicketData } from '@/types'
 import {
   drawCustomText,
   getTextWidth,
@@ -45,10 +45,38 @@ export const protrusionWidth = 10
 const leftOffset = 80
 
 const ticketTrapezoids: TrapezoidConfig[] = [
-  { x: 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
-  { x: canvasWidth - 10, y: canvasHeight * 0.2, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
-  { x: 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'left' },
-  { x: canvasWidth - 10, y: canvasHeight * 0.8, width: protrusionWidth, height: protrusionHeight, offset: 5, direction: 'right' },
+  {
+    x: 10,
+    y: canvasHeight * 0.2,
+    width: protrusionWidth,
+    height: protrusionHeight,
+    offset: 5,
+    direction: 'left',
+  },
+  {
+    x: canvasWidth - 10,
+    y: canvasHeight * 0.2,
+    width: protrusionWidth,
+    height: protrusionHeight,
+    offset: 5,
+    direction: 'right',
+  },
+  {
+    x: 10,
+    y: canvasHeight * 0.8,
+    width: protrusionWidth,
+    height: protrusionHeight,
+    offset: 5,
+    direction: 'left',
+  },
+  {
+    x: canvasWidth - 10,
+    y: canvasHeight * 0.8,
+    width: protrusionWidth,
+    height: protrusionHeight,
+    offset: 5,
+    direction: 'right',
+  },
 ]
 
 /**
@@ -57,12 +85,13 @@ const ticketTrapezoids: TrapezoidConfig[] = [
 export const drawTicketDetails = (
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
-  ticketInfo: Record<string, any>,
+  ticketInfo: TicketData,
   styleConfig: TicketStyleConfig,
   callback?: () => void,
 ) => {
   const fonts = styleConfig.fonts
   const wearEffect = styleConfig.wearEffect
+  const showProtrusions = styleConfig.showProtrusions !== false
 
   // 根据检票口是否存在调整顶部偏移
   const topOffset = ticketInfo.checkGate !== '' ? 35 : 20
@@ -81,30 +110,33 @@ export const drawTicketDetails = (
   // 圆角矩形
   drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(173, 216, 230, .2)')
 
-  // 两边凸出的梯形小块
-  ctx.fillStyle = 'rgba(173, 216, 230, .2)'
-  drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'left')
-  drawTrapezoid(
-    ctx,
-    canvasWidth - 10,
-    canvasHeight * 0.2,
-    protrusionWidth,
-    protrusionHeight,
-    5,
-    'right',
-  )
-  drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left')
-  drawTrapezoid(
-    ctx,
-    canvasWidth - 10,
-    canvasHeight * 0.8,
-    protrusionWidth,
-    protrusionHeight,
-    5,
-    'right',
-  )
+  // 两边凸出的梯形小块（可选）
+  if (showProtrusions) {
+    ctx.fillStyle = 'rgba(173, 216, 230, .2)'
+    drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'left')
+    drawTrapezoid(
+      ctx,
+      canvasWidth - 10,
+      canvasHeight * 0.2,
+      protrusionWidth,
+      protrusionHeight,
+      5,
+      'right',
+    )
+    drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left')
+    drawTrapezoid(
+      ctx,
+      canvasWidth - 10,
+      canvasHeight * 0.8,
+      protrusionWidth,
+      protrusionHeight,
+      5,
+      'right',
+    )
+  }
 
   // 斜线纹理 - 使用优化后的裁剪方案，确保不超出圆角边界且覆盖梯形
+  const activeTrapezoids = showProtrusions ? ticketTrapezoids : []
   drawDiagonalPattern(
     ctx,
     canvasWidth,
@@ -114,7 +146,7 @@ export const drawTicketDetails = (
     canvasWidth - 40, // rectWidth
     canvasHeight - 20, // rectHeight
     20, // radius
-    ticketTrapezoids,
+    activeTrapezoids,
     'rgba(173, 216, 230, .5)', // strokeStyle
     1, // lineWidth
     5, // spacing
@@ -248,30 +280,43 @@ export const drawTicketDetails = (
   ctx.font = buildFontString(fonts.label.family, fonts.label.size)
   drawText('元', leftOffset + 42 + priceWidth, topOffset + 210)
   ctx.font = buildFontString(fonts.seatInfo.family, fonts.seatInfo.size + 4)
-  if (ticketInfo.isStudent) {
-    const studentText = '学'
-    const studentWidth = getTextWidth(ctx, studentText)
-    drawText(studentText, canvasWidth / 2 - studentWidth - 60, topOffset + 210)
 
-    ctx.beginPath()
-    ctx.arc(canvasWidth / 2 - studentWidth / 2 - 60, topOffset + 198, 17, 0, 2 * Math.PI)
-    ctx.stroke()
+  // 身份/优惠圈字标记
+  const identity = ticketInfo.identity || 'adult'
+  const isDiscount = ticketInfo.isDiscount
 
-    const discountText = '惠'
-    const discountWidth = getTextWidth(ctx, discountText)
-    drawText(discountText, canvasWidth / 2 - discountWidth - 10, topOffset + 210)
+  // 身份标记映射
+  const identityMarkMap: Record<string, string> = {
+    adult: '成',
+    student: '学',
+    child: '孩',
+    military: '军',
+    disabled: '残',
+  }
 
-    ctx.beginPath()
-    ctx.arc(canvasWidth / 2 - discountWidth / 2 - 10, topOffset + 198, 17, 0, 2 * Math.PI)
-    ctx.stroke()
-  } else if (ticketInfo.isDiscount) {
-    const discountText = '惠'
-    const discountWidth = getTextWidth(ctx, discountText)
-    drawText(discountText, canvasWidth / 2 - discountWidth - 20, topOffset + 210)
+  const marks: string[] = []
+  if (identityMarkMap[identity]) marks.push(identityMarkMap[identity])
+  if (isDiscount) marks.push('惠')
+  const payMethod = ticketInfo.payMethod || ''
+  if (payMethod) marks.push(payMethod)
 
-    ctx.beginPath()
-    ctx.arc(canvasWidth / 2 - discountWidth / 2 - 20, topOffset + 198, 17, 0, 2 * Math.PI)
-    ctx.stroke()
+  // 居中绘制圈字标记
+  if (marks.length > 0) {
+    const circleR = 17
+    const gap = 50 // 相邻圈心间距
+    const totalWidth = marks.length * circleR * 2 + (marks.length - 1) * (gap - circleR * 2)
+    const centerX = canvasWidth / 2
+    const startCx = centerX - totalWidth / 2 + circleR // 第一个圈心 x
+
+    for (let i = 0; i < marks.length; i++) {
+      const cx = startCx + i * gap
+      const markText = marks[i]
+      const markWidth = getTextWidth(ctx, markText)
+      drawText(markText, cx - markWidth / 2, topOffset + 210)
+      ctx.beginPath()
+      ctx.arc(cx, topOffset + 198, circleR, 0, 2 * Math.PI)
+      ctx.stroke()
+    }
   }
 
   // 仅供报销使用
@@ -303,7 +348,7 @@ export const drawTicketDetails = (
   drawText(text2, dashLeft + dashWidth / 2 - text2Width / 2, 440)
 
   // 二维码
-  const qrCodeText = 'https://github.com/FoskyM/train-ticket-generator'
+  const qrCodeText = styleConfig.qrContent || 'https://github.com/FoskyM/train-ticket-generator'
   const qrCodeWidth = 120
   const qrCodeOptions = {
     width: qrCodeWidth,
@@ -355,16 +400,19 @@ export const drawTicketDetails = (
  */
 export const drawTicket = (
   canvas: HTMLCanvasElement,
-  ticketInfo: Record<string, any>,
+  ticketInfo: TicketData,
   styleConfig: TicketStyleConfig,
   callback?: () => void,
 ) => {
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+  const showProtrusions = styleConfig.showProtrusions !== false
+  const activeTrapezoids = showProtrusions ? ticketTrapezoids : []
+
   // 将白色背景裁剪到票面形状，避免票面外出现白色冗余
   ctx.save()
-  createTicketClipPath(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, ticketTrapezoids)
+  createTicketClipPath(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, activeTrapezoids)
   ctx.clip()
   ctx.fillStyle = '#fff'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -380,7 +428,8 @@ export const drawTicket = (
     const centerX = paddingX
     const centerY = paddingY
 
-    ctx.globalAlpha = 0.05
+    const bgOpacity = styleConfig.backgroundOpacity ?? 0.05
+    ctx.globalAlpha = bgOpacity
     ctx.drawImage(backgroundImage, centerX, centerY, imgWidth, imgHeight)
     ctx.globalAlpha = 1.0
 
@@ -399,12 +448,14 @@ export const drawTicketBack = (
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
   const fonts = styleConfig.fonts
   const wearEffect = styleConfig.wearEffect
+  const showProtrusions = styleConfig.showProtrusions !== false
+  const activeTrapezoids = showProtrusions ? ticketTrapezoids : []
 
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
   // 将白色背景裁剪到票面形状
   ctx.save()
-  createTicketClipPath(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, ticketTrapezoids)
+  createTicketClipPath(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, activeTrapezoids)
   ctx.clip()
   ctx.fillStyle = '#fff'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -412,27 +463,30 @@ export const drawTicketBack = (
 
   // 圆角矩形
   drawRoundRect(ctx, 20, 10, canvasWidth - 40, canvasHeight - 20, 20, 'rgba(0, 0, 0, .9)')
-  // 两边凸出的梯形小块
-  drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'left')
-  drawTrapezoid(
-    ctx,
-    canvasWidth - 10,
-    canvasHeight * 0.2,
-    protrusionWidth,
-    protrusionHeight,
-    5,
-    'right',
-  )
-  drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left')
-  drawTrapezoid(
-    ctx,
-    canvasWidth - 10,
-    canvasHeight * 0.8,
-    protrusionWidth,
-    protrusionHeight,
-    5,
-    'right',
-  )
+
+  // 两边凸出的梯形小块（可选）
+  if (showProtrusions) {
+    drawTrapezoid(ctx, 10, canvasHeight * 0.2, protrusionWidth, protrusionHeight, 5, 'left')
+    drawTrapezoid(
+      ctx,
+      canvasWidth - 10,
+      canvasHeight * 0.2,
+      protrusionWidth,
+      protrusionHeight,
+      5,
+      'right',
+    )
+    drawTrapezoid(ctx, 10, canvasHeight * 0.8, protrusionWidth, protrusionHeight, 5, 'left')
+    drawTrapezoid(
+      ctx,
+      canvasWidth - 10,
+      canvasHeight * 0.8,
+      protrusionWidth,
+      protrusionHeight,
+      5,
+      'right',
+    )
+  }
 
   ctx.font = buildFontString(fonts.backTitle.family, fonts.backTitle.size)
   const text = '报销凭证使用须知'

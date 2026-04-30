@@ -35,8 +35,8 @@
 
 <script setup lang="ts">
 defineProps<{
-  tabs: Array<{ label: string; key: any }>
+  tabs: Array<{ label: string; key: string }>
 }>()
 
-const activeTab = defineModel<any>('modelValue')
+const activeTab = defineModel<string>('modelValue')
 </script>
